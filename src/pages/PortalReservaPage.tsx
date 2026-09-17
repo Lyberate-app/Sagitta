@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useContext } from 'react'
+import { useState, useEffect, useMemo, useContext, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Clock,
@@ -22,6 +22,8 @@ import {
   Search,
   CalendarCheck,
   ShieldCheck,
+  Download,
+  Smartphone,
 } from 'lucide-react'
 import { AppContext } from '@/context/AppContext'
 import { useConfiguracion } from '@/hooks/useConfiguracion'
@@ -37,10 +39,12 @@ import { pagosService } from '@/services/pagos.service'
 import { storageService } from '@/services/storage.service'
 import { Servicio, Empleado, SlotDisponible, Cita, CategoriaServicio } from '@/types'
 import {
-  descargarArchivoIcs,
   generarUrlGoogleCalendar,
   generarUrlWhatsApp,
 } from '@/utils/calendar'
+import { getDeviceInfo } from '@/utils/device'
+import { imprimirOguardarComprobantePDF } from '@/utils/pdfReceipt'
+import { PwaInstallPrompt } from '@/components/pwa/PwaInstallPrompt'
 
 // ─── SERVICIOS REALISTAS, HUMANOS Y CLAROS (ESTILO APP NATIVA IOS / ANDROID) ───
 interface ServicioVisual extends Servicio {
@@ -247,6 +251,24 @@ export default function PortalReservaPage() {
   // Confirmación
   const [citaConfirmada, setCitaConfirmada] = useState<Cita | null>(null)
   const [folioReserva, setFolioReserva] = useState<string>('')
+
+  // Detección de dispositivo y ref de scroll para el modal con teclado móvil
+  const deviceInfo = useMemo(() => getDeviceInfo(), [])
+  const modalScrollRef = useRef<HTMLDivElement>(null)
+
+  // Desplazamiento automático al cambiar de paso en el modal
+  useEffect(() => {
+    if (subVentanaAbierta && modalScrollRef.current) {
+      modalScrollRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [pasoSubVentana, subVentanaAbierta])
+
+  // Ajuste suave de scroll en dispositivos móviles al enfocar un campo
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setTimeout(() => {
+      e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 250)
+  }
 
   // Días próximos en hora local
   const proximosDias = useMemo(() => {
@@ -508,6 +530,9 @@ export default function PortalReservaPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F9FC] dark:bg-[#090B10] text-slate-900 dark:text-slate-100 font-sans selection:bg-indigo-600 selection:text-white pb-28 overflow-x-hidden">
+      {/* ─── BANNER / MODAL DE INSTALACIÓN PWA (IOS & ANDROID) ───────────── */}
+      <PwaInstallPrompt />
+
       {/* ─── 1. CABECERA NATIVA ESTILO APP (IOS / ANDROID APP BAR) ────────── */}
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-white/90 dark:bg-[#0D1117]/90 border-b border-slate-200/80 dark:border-slate-800 transition-all">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
@@ -745,8 +770,8 @@ export default function PortalReservaPage() {
             onClick={handleCerrarSubVentana}
           />
 
-          {/* Contenedor Bottom Sheet */}
-          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[32px] sm:rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col z-10 animate-in slide-in-from-bottom duration-300">
+          {/* Contenedor Bottom Sheet Adaptativo a Teclados Móviles */}
+          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[32px] sm:rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[85dvh] sm:max-h-[88vh] flex flex-col z-10 animate-in slide-in-from-bottom duration-300">
             {/* Grab Handle tipo iPhone */}
             <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleCerrarSubVentana}>
               <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full" />
@@ -777,8 +802,11 @@ export default function PortalReservaPage() {
               </button>
             </div>
 
-            {/* Contenido scrolleable */}
-            <div className="p-5 overflow-y-auto space-y-5 overscroll-contain">
+            {/* Contenido scrolleable con soporte para teclado móvil */}
+            <div
+              ref={modalScrollRef}
+              className="p-5 overflow-y-auto flex-1 space-y-5 overscroll-contain touch-pan-y pb-32 sm:pb-8"
+            >
               {/* PASO 1: HORARIO Y ESPECIALISTA */}
               {pasoSubVentana === 1 && (
                 <div className="space-y-5">
@@ -942,6 +970,7 @@ export default function PortalReservaPage() {
                       placeholder="Ej. Sofía Méndez"
                       value={nombreCliente}
                       onChange={(e) => setNombreCliente(e.target.value)}
+                      onFocus={handleInputFocus}
                       leftIcon={<User className="w-4 h-4" />}
                       required
                     />
@@ -952,6 +981,7 @@ export default function PortalReservaPage() {
                       type="tel"
                       value={telefonoCliente}
                       onChange={(e) => setTelefonoCliente(e.target.value)}
+                      onFocus={handleInputFocus}
                       leftIcon={<Phone className="w-4 h-4" />}
                       required
                     />
@@ -962,6 +992,7 @@ export default function PortalReservaPage() {
                       type="email"
                       value={emailCliente}
                       onChange={(e) => setEmailCliente(e.target.value)}
+                      onFocus={handleInputFocus}
                       leftIcon={<Mail className="w-4 h-4" />}
                     />
 
@@ -973,6 +1004,7 @@ export default function PortalReservaPage() {
                         rows={2}
                         value={notasCliente}
                         onChange={(e) => setNotasCliente(e.target.value)}
+                        onFocus={handleInputFocus}
                         placeholder="Ej. Prefiero corte con tijera / Tengo el cabello largo..."
                         className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-base sm:text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                       />
@@ -1047,8 +1079,18 @@ export default function PortalReservaPage() {
                     </div>
                   </div>
 
-                  {/* Acciones de WhatsApp y Calendario */}
+                  {/* Acciones de WhatsApp, Comprobante PDF y Calendario */}
                   <div className="flex flex-col gap-2 pt-1 max-w-sm mx-auto">
+                    {/* Botón Principal: Guardar comprobante PDF */}
+                    <Button
+                      type="button"
+                      onClick={() => imprimirOguardarComprobantePDF(citaConfirmada, configuracion, folioReserva)}
+                      className="w-full py-3.5 rounded-2xl gap-2 font-bold text-sm bg-indigo-600 hover:bg-indigo-700 text-white shadow-md active:scale-95 transition-all"
+                    >
+                      <FileText className="w-4 h-4" />
+                      <span>Descargar Comprobante (PDF)</span>
+                    </Button>
+
                     {configuracion.telefono_soporte && (
                       <a
                         href={generarUrlWhatsApp(
@@ -1083,11 +1125,25 @@ export default function PortalReservaPage() {
                         variant="outline"
                         size="sm"
                         className="flex-1 rounded-2xl gap-1.5 text-xs"
-                        onClick={() => descargarArchivoIcs(citaConfirmada)}
+                        onClick={() => imprimirOguardarComprobantePDF(citaConfirmada, configuracion, folioReserva)}
                       >
-                        <FileText className="w-3.5 h-3.5 text-indigo-500" />
-                        <span>Guardar en iPhone</span>
+                        <Download className="w-3.5 h-3.5 text-indigo-500" />
+                        <span>
+                          {deviceInfo.isIOS
+                            ? 'Guardar en iPhone (PDF)'
+                            : deviceInfo.isAndroid
+                            ? 'Guardar en Android (PDF)'
+                            : 'Imprimir Ticket'}
+                        </span>
                       </Button>
+                    </div>
+
+                    {/* Detección de dispositivo */}
+                    <div className="pt-1 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+                      <Smartphone className="w-3.5 h-3.5" />
+                      <span>
+                        Detectado: {deviceInfo.isIOS ? 'Apple iOS (iPhone/iPad)' : deviceInfo.isAndroid ? 'Android' : 'Navegador Web'}
+                      </span>
                     </div>
                   </div>
 

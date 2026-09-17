@@ -124,7 +124,8 @@ sagitta/
     │
     ├── context/
     │   ├── AuthContext.tsx         # Estado de autenticación: user, isAuthenticated, login/logout
-    │   └── AppContext.tsx          # Estado global: tema (dark/light), sidebar, sistema de toasts
+    │   ├── AppContext.tsx          # Estado global: tema (dark/light), sidebar, sistema de toasts
+    │   └── ReservaContext.tsx      # Estado del wizard de reservas: pasos, carrito, servicios, fechas
     │
     ├── hooks/
     │   ├── useAuth.ts              # Acceso rápido al AuthContext
@@ -132,34 +133,68 @@ sagitta/
     │   └── useToast.ts             # Acceso al sistema de notificaciones toast
     │
     ├── services/
-    │   └── api.client.ts           # Cliente HTTP: JWT automático, manejo 401, authService
+    │   ├── api.client.ts           # Cliente HTTP: JWT automático, manejo 401, authService
+    │   ├── citas.service.ts        # CRUD de citas y consulta de disponibilidad
+    │   ├── servicios.service.ts    # CRUD de servicios y categorías del negocio
+    │   ├── empleados.service.ts    # Directorio de profesionales, horarios y disponibilidad
+    │   └── clientes.service.ts     # Directorio de clientes y búsqueda
     │
     ├── components/
     │   ├── ui/
     │   │   ├── Button.tsx          # Botón con variantes primary/secondary/ghost/danger + loading
     │   │   ├── Input.tsx           # Input con label, error, hint, iconos laterales
+    │   │   ├── Select.tsx          # Select desplegable accesible con icono
+    │   │   ├── Textarea.tsx        # Textarea responsivo para notas y descripciones
     │   │   ├── Modal.tsx           # Modal con backdrop blur, cierre Escape, animación
     │   │   ├── Toast.tsx           # Notificaciones success/error/warning/info
     │   │   ├── Loader.tsx          # Spinner con variante fullScreen + backdrop
-    │   │   ├── Badge.tsx           # Etiquetas con colores y punto indicador
+    │   │   ├── Badge.tsx           # Etiquetas con variantes y tamaño configurable
+    │   │   ├── Avatar.tsx          # Foto de perfil o iniciales del usuario
+    │   │   ├── Stepper.tsx         # Indicador de progreso paso a paso para wizards
+    │   │   ├── EmptyState.tsx      # Estado vacío visual con icono y CTA
     │   │   └── index.ts            # Barrel export de todos los UI
     │   │
-    │   └── layout/
-    │       ├── Navbar.tsx          # Barra superior: logo, toggle sidebar, tema, usuario
-    │       ├── Sidebar.tsx         # Menú lateral colapsable con NavLinks activos
-    │       ├── PageWrapper.tsx     # Composición: Navbar + Sidebar + main + ToastContainer
-    │       └── index.ts            # Barrel export
+    │   ├── layout/
+    │   │   ├── Navbar.tsx          # Barra superior: logo, toggle sidebar, tema, usuario
+    │   │   ├── Sidebar.tsx         # Menú lateral colapsable con NavLinks activos
+    │   │   ├── PageWrapper.tsx     # Composición: Navbar + Sidebar + main + ToastContainer
+    │   │   └── index.ts            # Barrel export
+    │   │
+    │   ├── calendario/
+    │   │   ├── CalendarioMensual.tsx # Vista en cuadrícula de 30/31 días con citas del día
+    │   │   ├── CalendarioSemanal.tsx # Rejilla horaria semanal (lunes a domingo)
+    │   │   ├── VistaLista.tsx        # Listado de citas con búsqueda y filtros por estado
+    │   │   ├── SelectorFechaHora.tsx # Selector interactivo de slots y días
+    │   │   └── index.ts
+    │   │
+    │   └── reservas/
+    │       ├── PasoServicio.tsx      # Paso 1: Selección de servicio y duración
+    │       ├── PasoEmpleado.tsx      # Paso 2: Elección de profesional o asignación automática
+    │       ├── PasoFechaHora.tsx     # Paso 3: Selección de día y horario disponible
+    │       ├── PasoConfirmacion.tsx  # Paso 4: Resumen, citas recurrentes y notas
+    │       ├── CarritoReserva.tsx    # Modal de reservas múltiples en una sola transacción
+    │       ├── TarjetaCita.tsx       # Tarjeta individual con detalles y acciones de cita
+    │       └── index.ts
     │
     ├── pages/
     │   ├── LoginPage.tsx           # Login split: branding izq + formulario der
-    │   ├── DashboardPage.tsx       # Dashboard con KPI cards + placeholders de fases futuras
+    │   ├── DashboardPage.tsx       # Dashboard con KPIs operativos, citas del día y accesos
+    │   ├── CitasPage.tsx           # Gestión de citas (vistas: mes, semana, lista + modal de detalle)
+    │   ├── NuevaCitaPage.tsx       # Asistente de reservas paso a paso con carrito y recurrencia
+    │   ├── ServiciosPage.tsx       # Catálogo de servicios, categorías y buffer times
+    │   ├── EmpleadosPage.tsx       # Directorio de profesionales y visor de horarios laborales
+    │   ├── ClientesPage.tsx        # Directorio de clientes con búsqueda y registro
     │   └── NotFoundPage.tsx        # Página 404 con botón de regreso
     │
     └── mocks/
         ├── browser.ts              # Setup MSW Service Worker
         └── handlers/
-            ├── auth.handlers.ts    # Mock: POST /login, GET /me, POST /logout
-            └── index.ts            # Agrupa todos los handlers (crece con cada fase)
+            ├── auth.handlers.ts      # Mock: POST /login, GET /me, POST /logout
+            ├── citas.handlers.ts     # Mock: CRUD /citas y /citas/disponibilidad
+            ├── servicios.handlers.ts # Mock: CRUD /servicios y /categorias-servicio
+            ├── empleados.handlers.ts # Mock: /empleados, horarios y slots
+            ├── clientes.handlers.ts  # Mock: /clientes y búsqueda reactiva
+            └── index.ts              # Agrupa todos los handlers (crece con cada fase)
 ```
 
 ---
@@ -283,34 +318,36 @@ VITE_USE_MOCKS=false
 
 ---
 
-### Fase 2 — Sistema de Reservas Core 🔄 `PRÓXIMA`
+### Fase 2 — Sistema de Reservas Core ✅ `COMPLETADA`
 **Rama:** `feat/fase-2-reservas`  
-**Descripción:** El corazón del sistema. Implementa el flujo completo de reservas de punta a punta.
+**Descripción:** El corazón del sistema. Flujo completo de reservas de punta a punta con wizard progresivo, vistas flexibles de calendario y gestión operativa.
 
-**Lo que incluye:**
-- **Asistente paso a paso:** Servicio → Empleado → Fecha/Hora → Confirmar
-- **Carrito de servicios:** múltiples servicios por transacción
-- **Calendario de disponibilidad:** vista de slots libres por empleado y fecha
-- **Citas recurrentes:** diaria, semanal, mensual, anual
-- **Campos personalizados:** checkbox, textarea, select en el formulario
-- **Gestión de empleados:** perfiles, horarios, buffer time, días libres
-- **Gestión de servicios:** CRUD con duración personalizable y precios múltiples
-- **Múltiples ubicaciones:** gestión de varias sedes
-- **Zonas horarias:** detección automática del cliente
-- **Panel de empleados:** gestión propia de horarios
-- **Panel de clientes:** ver, reprogramar y cancelar citas propias
-- **Vistas del backend:** calendario mensual/semanal/diario/lista
+**Lo implementado:**
+- **Asistente paso a paso (Wizard):** Selección progresiva (Servicio/Duración → Empleado → Fecha/Hora → Resumen y Notas)
+- **Función de carrito:** Reserva de múltiples servicios en una sola transacción (`CarritoReserva.tsx`)
+- **Citas recurrentes:** Soporte para programar citas diarias, semanales, mensuales o anuales
+- **Vistas flexibles de agenda:**
+  - `CalendarioMensual`: Cuadrícula con citas resumidas por día
+  - `CalendarioSemanal`: Rejilla horaria semanal (lunes a domingo, 08:00 a 18:00)
+  - `VistaLista`: Tabla/tarjetas con filtros en tiempo real por estado y buscador de texto
+- **Selector interactivo de fecha y hora:** Detección de disponibilidad en mañana y tarde con slots dinámicos
+- **Catálogo de servicios:** CRUD de servicios, categorías, duraciones personalizadas y buffer times (antes/después)
+- **Directorio de profesionales:** Asignación de especialidades, estado activo y visor de horarios laborales habituales
+- **Directorio de clientes:** Búsqueda reactiva por nombre/correo, conteo histórico de citas y registro rápido
+- **Dashboard actualizado:** KPIs en vivo, listado de próximas citas y accesos directos
+- **Mocks MSW completos:** Handlers de `citas`, `servicios`, `empleados` y `clientes`
 
-**Mocks nuevos:** `citas.handlers.ts`, `servicios.handlers.ts`, `empleados.handlers.ts`
-
-**Endpoints que el compañero debe tener listos:**
-- `GET /api/citas`, `POST /api/citas`, `PUT /api/citas/{id}`
-- `GET /api/servicios`, `GET /api/empleados`
-- `GET /api/empleados/{id}/disponibilidad?fecha=YYYY-MM-DD`
+**Endpoints que el compañero backend debe implementar:**
+- `GET /api/citas`, `POST /api/citas`, `PUT /api/citas/{id}`, `DELETE /api/citas/{id}`
+- `GET /api/citas/disponibilidad?empleado_id={id}&fecha={YYYY-MM-DD}`
+- `GET /api/servicios`, `POST /api/servicios`, `PUT /api/servicios/{id}`, `DELETE /api/servicios/{id}`
+- `GET /api/categorias-servicio`
+- `GET /api/empleados`, `GET /api/empleados/{id}/horario`, `GET /api/empleados/{id}/disponibilidad`
+- `GET /api/clientes`, `POST /api/clientes`
 
 ---
 
-### Fase 3 — Pagos y Servicios Avanzados 💸 `PLANIFICADA`
+### Fase 3 — Pagos y Finanzas 🔄 `PRÓXIMA`
 **Rama:** `feat/fase-3-pagos`  
 **Descripción:** Monetización del sistema y funcionalidades avanzadas de reservas.
 
@@ -509,3 +546,4 @@ Todos los endpoints protegidos leen el header: `Authorization: Bearer <jwt_token
 ---
 
 *Sagitta © 2026 — Lyberate App*
+

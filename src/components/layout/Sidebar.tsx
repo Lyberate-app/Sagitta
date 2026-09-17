@@ -5,6 +5,7 @@ import {
   Sparkles,
   Users,
   Briefcase,
+  Receipt,
   Settings,
   ChevronLeft,
 } from 'lucide-react'
@@ -24,6 +25,7 @@ const navItems: NavItem[] = [
   { label: 'Servicios',  to: '/servicios',   icon: <Sparkles        className="w-5 h-5" /> },
   { label: 'Empleados',  to: '/empleados',   icon: <Briefcase       className="w-5 h-5" /> },
   { label: 'Clientes',   to: '/clientes',    icon: <Users           className="w-5 h-5" /> },
+  { label: 'Finanzas',   to: '/finanzas',    icon: <Receipt         className="w-5 h-5" /> },
   { label: 'Ajustes',    to: '/ajustes',     icon: <Settings        className="w-5 h-5" /> },
 ]
 

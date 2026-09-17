@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { CalendarDays, Users, Briefcase, TrendingUp, Plus, Clock, ArrowRight } from 'lucide-react'
+import { CalendarDays, Users, Briefcase, TrendingUp, Plus, Clock, ArrowRight, Receipt } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Badge, Button, Loader } from '@/components/ui'
 import { Cita } from '@/types'
@@ -205,6 +205,22 @@ export default function DashboardPage() {
                 <div>
                   <p className="text-xs font-bold text-slate-800 dark:text-slate-100">Directorio de Clientes</p>
                   <p className="text-[11px] text-slate-400">Historial y contactos</p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              to="/finanzas"
+              className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-800 dark:text-slate-100">Finanzas y Pagos</p>
+                  <p className="text-[11px] text-slate-400">Facturación y cupones</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />

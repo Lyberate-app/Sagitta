@@ -225,6 +225,114 @@ export interface EstadoWizard {
   notas: string
   respuestasCampos: RespuestaCampo[]
   carrito: ItemCarrito[]
+  serviciosExtraSeleccionados?: ServicioExtra[]
+  cuponAplicado?: Cupon
+  descuentoCupon?: number
+}
+
+// ─── Fase 3: Pagos, Facturas y Cupones ──────────────────────────────────
+export type MetodoPago = 'tarjeta' | 'efectivo' | 'transferencia' | 'stripe'
+export type EstadoFactura = 'pagada' | 'pendiente' | 'reembolsada'
+
+export interface ItemFactura {
+  descripcion: string
+  cantidad: number
+  precio_unitario: number
+  total: number
+}
+
+export interface Factura {
+  id: number
+  numero: string
+  cita_id?: number
+  cita?: Cita
+  cliente_id: number
+  cliente?: Cliente
+  subtotal: number
+  descuento: number
+  total: number
+  metodo_pago: MetodoPago
+  estado: EstadoFactura
+  items: ItemFactura[]
+  cupon_aplicado?: string
+  pdf_url?: string
+  created_at: string
+}
+
+export type TipoCupon = 'porcentual' | 'fijo'
+
+export interface Cupon {
+  id: number
+  codigo: string
+  tipo: TipoCupon
+  valor: number
+  valido_desde?: string
+  valido_hasta?: string
+  usos_max?: number
+  usos_actuales: number
+  activo: boolean
+}
+
+export interface ValidacionCupon {
+  valido: boolean
+  mensaje: string
+  cupon?: Cupon
+  descuento_calculado?: number
+}
+
+export type EstadoReembolso = 'completado' | 'procesando' | 'rechazado'
+
+export interface Reembolso {
+  id: number
+  factura_id: number
+  factura_numero?: string
+  cliente_id?: number
+  cliente_nombre?: string
+  monto: number
+  motivo: string
+  estado: EstadoReembolso
+  created_at: string
+}
+
+// ─── Fase 3: Servicios Extra y Paquetes ──────────────────────────────────
+export interface ServicioExtra {
+  id: number
+  servicio_id?: number
+  nombre: string
+  descripcion?: string
+  precio: number
+  duracion_extra_min: number
+  activo: boolean
+}
+
+export interface PaqueteServicio {
+  id: number
+  nombre: string
+  descripcion: string
+  precio_total: number
+  precio_original: number
+  servicios_ids: number[]
+  servicios?: Servicio[]
+  descuento_porcentaje: number
+  activo: boolean
+}
+
+// ─── Fase 3: Lista de Espera ─────────────────────────────────────────────
+export type EstadoListaEspera = 'en_espera' | 'notificado' | 'cancelado' | 'convertido'
+
+export interface ItemListaEspera {
+  id: number
+  cliente_id: number
+  cliente?: Cliente
+  servicio_id: number
+  servicio?: Servicio
+  empleado_id?: number
+  empleado?: Empleado
+  fecha_deseada: string
+  hora_preferente?: string
+  notas?: string
+  estado: EstadoListaEspera
+  created_at: string
 }
 
 // ─── UI ────────────────────────────────────────────────────────────────────
@@ -241,3 +349,4 @@ export interface Toast {
 export type Theme = 'light' | 'dark' | 'system'
 
 export type VistaCalendario = 'mes' | 'semana' | 'dia' | 'lista'
+

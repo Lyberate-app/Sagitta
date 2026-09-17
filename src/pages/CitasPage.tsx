@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Calendar as CalIcon, CalendarDays, ListFilter } from 'lucide-react'
-import { Cita, VistaCalendario, EstadoCita } from '@/types'
+import { Plus, Calendar as CalIcon, CalendarDays, ListFilter, Receipt } from 'lucide-react'
+import { Cita, VistaCalendario, EstadoCita, Factura } from '@/types'
 import { citasService } from '@/services/citas.service'
+import { pagosService } from '@/services/pagos.service'
 import {
   CalendarioMensual,
   CalendarioSemanal,
   VistaLista,
 } from '@/components/calendario'
+import { FacturaModal } from '@/components/pagos/FacturaModal'
 import { Button, Loader, Modal, Badge } from '@/components/ui'
 import { useToast } from '@/hooks/useToast'
 
@@ -16,6 +18,7 @@ export default function CitasPage() {
   const [cargando, setCargando] = useState(true)
   const [vista, setVista] = useState<VistaCalendario>('mes')
   const [citaSeleccionada, setCitaSeleccionada] = useState<Cita | null>(null)
+  const [facturaModal, setFacturaModal] = useState<Factura | null>(null)
   const { toast } = useToast()
 
   const cargarCitas = () => {
@@ -169,6 +172,39 @@ export default function CitasPage() {
                 )}
               </div>
               <div className="flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={async () => {
+                    const res = await pagosService.getFacturas()
+                    const fac = res.data?.find((f) => f.cita_id === citaSeleccionada.id) ?? {
+                      id: Date.now(),
+                      numero: `FAC-CITA-${citaSeleccionada.id}`,
+                      cita_id: citaSeleccionada.id,
+                      cliente_id: citaSeleccionada.cliente_id,
+                      cliente: citaSeleccionada.cliente,
+                      subtotal: citaSeleccionada.precio_total,
+                      descuento: 0,
+                      total: citaSeleccionada.precio_total,
+                      metodo_pago: 'tarjeta' as const,
+                      estado: (citaSeleccionada.estado === 'cancelada' ? 'reembolsada' : 'pagada') as 'pagada' | 'reembolsada',
+                      items: [
+                        {
+                          descripcion: citaSeleccionada.servicio?.nombre ?? 'Servicio',
+                          cantidad: 1,
+                          precio_unitario: citaSeleccionada.precio_total,
+                          total: citaSeleccionada.precio_total,
+                        },
+                      ],
+                      created_at: citaSeleccionada.created_at,
+                    }
+                    setFacturaModal(fac)
+                  }}
+                  leftIcon={<Receipt className="w-3.5 h-3.5" />}
+                >
+                  Factura
+                </Button>
+
                 {citaSeleccionada.estado !== 'cancelada' && (
                   <Button
                     variant="danger"
@@ -240,6 +276,14 @@ export default function CitasPage() {
           </div>
         </Modal>
       )}
+
+      {/* Modal Comprobante / Factura */}
+      <FacturaModal
+        factura={facturaModal}
+        isOpen={!!facturaModal}
+        onClose={() => setFacturaModal(null)}
+      />
     </div>
   )
 }
+

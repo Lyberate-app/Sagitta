@@ -11,6 +11,7 @@ import NuevaCitaPage from '@/pages/NuevaCitaPage'
 import ServiciosPage from '@/pages/ServiciosPage'
 import EmpleadosPage from '@/pages/EmpleadosPage'
 import ClientesPage from '@/pages/ClientesPage'
+import PagosPage from '@/pages/PagosPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -78,6 +79,15 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <ClientesPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/finanzas"
+        element={
+          <PrivateRoute>
+            <PagosPage />
           </PrivateRoute>
         }
       />

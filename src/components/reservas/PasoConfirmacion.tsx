@@ -1,9 +1,15 @@
 import { useState } from 'react'
-import { Calendar, Clock, User, DollarSign, Repeat, FileText } from 'lucide-react'
+import { Calendar, Clock, User, DollarSign, Repeat, FileText, Sparkles, Tag } from 'lucide-react'
 import {
-  Servicio, DuracionServicio, Empleado, TipoRecurrencia
+  Servicio,
+  DuracionServicio,
+  Empleado,
+  TipoRecurrencia,
+  ServicioExtra,
+  Cupon,
 } from '@/types'
 import { Button, Textarea, Select } from '@/components/ui'
+import { CuponInput, ServiciosExtraSelector } from '@/components/pagos'
 
 interface PasoConfirmacionProps {
   servicio?: Servicio
@@ -14,7 +20,12 @@ interface PasoConfirmacionProps {
   notas: string
   onNotasChange: (notas: string) => void
   onAnterior: () => void
-  onConfirmar: (datosExtra: { recurrencia?: { tipo: TipoRecurrencia; intervalo: number } }) => void
+  onConfirmar: (datosExtra: {
+    recurrencia?: { tipo: TipoRecurrencia; intervalo: number }
+    serviciosExtra?: ServicioExtra[]
+    cupon?: Cupon
+    totalFinal: number
+  }) => void
   cargando?: boolean
 }
 
@@ -34,8 +45,20 @@ export function PasoConfirmacion({
   const [tipoRecurrencia, setTipoRecurrencia] = useState<TipoRecurrencia>('semanal')
   const [intervalo, setIntervalo] = useState(1)
 
-  const precioFinal = duracion?.precio ?? servicio?.precio_base ?? 0
-  const duracionFinal = duracion?.duracion_min ?? servicio?.duracion_base_min ?? 30
+  // Fase 3: Extras y Cupones
+  const [extras, setExtras] = useState<ServicioExtra[]>([])
+  const [cupon, setCupon] = useState<Cupon | undefined>()
+  const [descuento, setDescuento] = useState(0)
+
+  const precioBase = duracion?.precio ?? servicio?.precio_base ?? 0
+  const duracionBase = duracion?.duracion_min ?? servicio?.duracion_base_min ?? 30
+
+  const totalExtras = extras.reduce((sum, e) => sum + e.precio, 0)
+  const duracionExtras = extras.reduce((sum, e) => sum + e.duracion_extra_min, 0)
+  const duracionTotal = duracionBase + duracionExtras
+
+  const subtotal = precioBase + totalExtras
+  const totalFinal = Math.max(0, subtotal - descuento)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,6 +66,9 @@ export function PasoConfirmacion({
       recurrencia: esRecurrente
         ? { tipo: tipoRecurrencia, intervalo }
         : undefined,
+      serviciosExtra: extras,
+      cupon,
+      totalFinal,
     })
   }
 
@@ -50,34 +76,34 @@ export function PasoConfirmacion({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-          Paso 4: Confirmación y notas
+          Paso 4: Confirmación y Opciones
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-          Revisa el resumen antes de agendar tu cita
+          Revisa el resumen, agrega extras y aplica cupones antes de agendar
         </p>
       </div>
 
       {/* Tarjeta de Resumen */}
       <div className="card p-6 bg-primary-50/20 dark:bg-primary-950/20 border-primary-200 dark:border-primary-900/60 space-y-4">
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="flex items-start justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div>
             <h4 className="font-bold text-lg text-slate-900 dark:text-slate-100">
               {servicio?.nombre}
             </h4>
             <p className="text-xs text-primary-600 dark:text-primary-400 font-semibold">
-              {duracion?.etiqueta ? `${duracion.etiqueta} • ` : ''}{duracionFinal} minutos
+              {duracion?.etiqueta ? `${duracion.etiqueta} • ` : ''}{duracionTotal} minutos en total
             </p>
           </div>
           <div className="text-right">
             <span className="text-2xl font-black text-slate-900 dark:text-slate-100 flex items-center justify-end">
               <DollarSign className="w-5 h-5 text-primary-600" />
-              {precioFinal}
+              {totalFinal}
             </span>
             <span className="text-[11px] text-slate-400">Total a pagar</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
             <User className="w-4 h-4 text-primary-500 flex-shrink-0" />
             <span>
@@ -98,9 +124,56 @@ export function PasoConfirmacion({
           </div>
           <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
             <FileText className="w-4 h-4 text-primary-500 flex-shrink-0" />
-            <span>Zona horaria: Detectada automáticamente</span>
+            <span>Zona horaria: Local detectada</span>
           </div>
         </div>
+
+        {/* Desglose de Precios */}
+        <div className="pt-3 border-t border-slate-200/60 dark:border-slate-800/80 text-xs space-y-1">
+          <div className="flex justify-between text-slate-500">
+            <span>Servicio base</span>
+            <span>${precioBase}</span>
+          </div>
+          {extras.map((ex) => (
+            <div key={ex.id} className="flex justify-between text-slate-500">
+              <span className="flex items-center gap-1">
+                <Sparkles className="w-3 h-3 text-primary-500" />
+                {ex.nombre}
+              </span>
+              <span>+${ex.precio}</span>
+            </div>
+          ))}
+          {descuento > 0 && (
+            <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-semibold">
+              <span className="flex items-center gap-1">
+                <Tag className="w-3 h-3" />
+                Descuento cupón {cupon ? `(${cupon.codigo})` : ''}
+              </span>
+              <span>-${descuento}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Servicios Extra (Add-ons) */}
+      <div className="card p-5">
+        <ServiciosExtraSelector
+          seleccionados={extras}
+          onCambiar={(nuevos) => setExtras(nuevos)}
+        />
+      </div>
+
+      {/* Cupón de descuento */}
+      <div className="card p-5">
+        <CuponInput
+          total={subtotal}
+          cuponAplicado={cupon}
+          descuentoActual={descuento}
+          onAplicarCupon={(desc, c) => {
+            setDescuento(desc)
+            setCupon(c)
+          }}
+        />
       </div>
 
       {/* Citas Recurrentes */}
@@ -159,7 +232,7 @@ export function PasoConfirmacion({
           Atrás
         </Button>
         <Button type="submit" isLoading={cargando} size="lg">
-          Confirmar y Agendar Cita
+          Confirmar y Agendar (${totalFinal})
         </Button>
       </div>
     </form>

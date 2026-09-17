@@ -12,7 +12,8 @@ import {
 import { Stepper, Button, Modal } from '@/components/ui'
 import { useToast } from '@/hooks/useToast'
 import { citasService } from '@/services/citas.service'
-import { TipoRecurrencia } from '@/types'
+import { pagosService } from '@/services/pagos.service'
+import { TipoRecurrencia, ServicioExtra, Cupon } from '@/types'
 
 const STEPS = [
   { id: 1, title: 'Servicio', subtitle: 'Qué deseas agendar' },
@@ -41,7 +42,12 @@ function WizardContent() {
     reset,
   } = ctx
 
-  const handleConfirmar = async (datosExtra: { recurrencia?: { tipo: TipoRecurrencia; intervalo: number } }) => {
+  const handleConfirmar = async (datosExtra: {
+    recurrencia?: { tipo: TipoRecurrencia; intervalo: number }
+    serviciosExtra?: ServicioExtra[]
+    cupon?: Cupon
+    totalFinal: number
+  }) => {
     if (!estado.servicioSeleccionado || !estado.empleadoSeleccionado || !estado.fechaSeleccionada || !estado.horaSeleccionada) {
       toast.warning('Datos incompletos', 'Asegúrate de completar todos los pasos')
       return
@@ -49,23 +55,26 @@ function WizardContent() {
 
     setCargando(true)
     try {
-      const durMin = estado.duracionSeleccionada?.duracion_min ?? estado.servicioSeleccionado.duracion_base_min
+      const durMinBase = estado.duracionSeleccionada?.duracion_min ?? estado.servicioSeleccionado.duracion_base_min
+      const durMinExtras = datosExtra.serviciosExtra?.reduce((acc, ex) => acc + ex.duracion_extra_min, 0) ?? 0
+      const durTotal = durMinBase + durMinExtras
+
       const fechaInicio = `${estado.fechaSeleccionada} ${estado.horaSeleccionada}:00`
 
-      // Calcular fecha fin simple sumando minutos
+      // Calcular fecha fin sumando minutos totales
       const [h, m] = estado.horaSeleccionada.split(':').map(Number)
-      const totalMin = h * 60 + m + durMin
+      const totalMin = h * 60 + m + durTotal
       const hFin = String(Math.floor(totalMin / 60)).padStart(2, '0')
       const mFin = String(totalMin % 60).padStart(2, '0')
       const fechaFin = `${estado.fechaSeleccionada} ${hFin}:${mFin}:00`
 
-      await citasService.create({
+      const resCita = await citasService.create({
         cliente_id: 1, // cliente mock actual
         empleado_id: estado.empleadoSeleccionado.id,
         servicio_id: estado.servicioSeleccionado.id,
         fecha_inicio: fechaInicio,
         fecha_fin: fechaFin,
-        precio_total: estado.duracionSeleccionada?.precio ?? estado.servicioSeleccionado.precio_base,
+        precio_total: datosExtra.totalFinal,
         estado: 'confirmada',
         notas: estado.notas,
         recurrencia: datosExtra.recurrencia ? {
@@ -75,7 +84,37 @@ function WizardContent() {
         } : undefined,
       })
 
-      toast.success('¡Cita agendada con éxito!', 'Tu cita ha sido confirmada en el calendario')
+      // Generar factura automática de la cita
+      const precioBase = estado.duracionSeleccionada?.precio ?? estado.servicioSeleccionado.precio_base
+      const subtotal = precioBase + (datosExtra.serviciosExtra?.reduce((sum, e) => sum + e.precio, 0) ?? 0)
+      const descuento = Math.max(0, subtotal - datosExtra.totalFinal)
+
+      await pagosService.crearFactura({
+        cita_id: resCita.data?.id ?? Date.now(),
+        cliente_id: 1,
+        subtotal,
+        descuento,
+        total: datosExtra.totalFinal,
+        metodo_pago: 'tarjeta',
+        estado: 'pagada',
+        cupon_aplicado: datosExtra.cupon?.codigo,
+        items: [
+          {
+            descripcion: `${estado.servicioSeleccionado.nombre} (${durMinBase}m)`,
+            cantidad: 1,
+            precio_unitario: precioBase,
+            total: precioBase,
+          },
+          ...(datosExtra.serviciosExtra?.map((ex) => ({
+            descripcion: `Extra: ${ex.nombre}`,
+            cantidad: 1,
+            precio_unitario: ex.precio,
+            total: ex.precio,
+          })) ?? []),
+        ],
+      })
+
+      toast.success('¡Cita agendada y factura emitida!', 'Tu cita y comprobante se han generado correctamente')
       reset()
       navigate('/citas')
     } catch (err) {

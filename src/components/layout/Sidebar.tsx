@@ -42,9 +42,9 @@ export function Sidebar() {
   return (
     <aside
       className={[
-        'h-[calc(100vh-4rem)] sticky top-16 flex flex-col border-r border-slate-100 dark:border-slate-800',
+        'h-[calc(100vh-4rem)] sticky top-16 flex flex-col border-slate-100 dark:border-slate-800 shrink-0 z-20',
         'bg-white dark:bg-slate-900 transition-all duration-300 overflow-hidden',
-        isOpen ? 'w-60' : 'w-16',
+        isOpen ? 'w-60 border-r' : 'w-0 md:w-16 border-r-0 md:border-r',
       ].join(' ')}
     >
       {/* Nav */}

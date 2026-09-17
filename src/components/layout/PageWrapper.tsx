@@ -13,7 +13,7 @@ export function PageWrapper({ children }: PageWrapperProps) {
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <main className="flex-1 p-6 overflow-auto animate-fade-in">
+        <main className="flex-1 p-3 sm:p-6 overflow-auto animate-fade-in min-w-0">
           {children}
         </main>
       </div>

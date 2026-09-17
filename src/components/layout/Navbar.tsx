@@ -23,7 +23,7 @@ export function Navbar() {
       : configuracion.logo_url
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-30">
+    <header className="h-16 flex items-center justify-between px-3 sm:px-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-30">
       {/* Left */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => app?.toggleSidebar()} aria-label="Toggle sidebar">

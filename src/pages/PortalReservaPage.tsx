@@ -430,29 +430,29 @@ export default function PortalReservaPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0C10] text-slate-900 dark:text-slate-100 font-sans selection:bg-black selection:text-white pb-28">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0C10] text-slate-900 dark:text-slate-100 font-sans selection:bg-black selection:text-white pb-28 overflow-x-hidden">
       {/* ─── 1. NAVBAR ESTILO APPLE (FROSTED GLASS & MINIMALIST) ─────────── */}
       <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/80 dark:bg-[#0A0C10]/80 border-b border-black/[0.05] dark:border-white/[0.08] transition-all">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
           {/* Logo y Marca */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {configuracion.logo_url ? (
               <img
                 src={configuracion.logo_url}
                 alt={nombreMarca}
-                className="h-8 max-w-[140px] object-contain"
+                className="h-7 sm:h-8 max-w-[110px] sm:max-w-[140px] object-contain shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-bold shadow-sm">
+              <div className="w-8 h-8 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-bold shadow-sm shrink-0">
                 <Scissors className="w-4 h-4" />
               </div>
             )}
-            <div className="leading-none">
-              <span className="font-semibold text-base tracking-tight block text-slate-900 dark:text-white">
+            <div className="leading-none min-w-0">
+              <span className="font-semibold text-sm sm:text-base tracking-tight block text-slate-900 dark:text-white truncate">
                 {nombreMarca}
               </span>
               {lemaMarca && (
-                <span className="text-[11px] text-slate-400 font-normal hidden sm:inline">
+                <span className="text-[10px] sm:text-[11px] text-slate-400 font-normal hidden md:inline truncate">
                   {lemaMarca}
                 </span>
               )}
@@ -460,8 +460,10 @@ export default function PortalReservaPage() {
           </div>
 
           {/* Enlaces y Acciones */}
-          <div className="flex items-center gap-2">
-            <TenantSelector />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="hidden sm:block">
+              <TenantSelector />
+            </div>
             <I18nSelector />
 
             {/* Alternar fondo blanco / oscuro */}
@@ -482,7 +484,7 @@ export default function PortalReservaPage() {
             {configuracion.telefono_soporte && (
               <a
                 href={`tel:${configuracion.telefono_soporte}`}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 transition-colors"
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 transition-colors"
               >
                 <Phone className="w-3 h-3" />
                 <span>{configuracion.telefono_soporte}</span>
@@ -493,49 +495,49 @@ export default function PortalReservaPage() {
       </header>
 
       {/* ─── 2. HERO PRINCIPAL LIMPIO (INSPIRACIÓN APPLE STUDIO) ───────────── */}
-      <section className="relative px-4 sm:px-6 pt-14 pb-12 max-w-4xl mx-auto text-center space-y-5">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] text-xs font-medium text-slate-600 dark:text-slate-300">
-          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+      <section className="relative px-4 sm:px-6 pt-10 sm:pt-14 pb-8 sm:pb-12 max-w-4xl mx-auto text-center space-y-4 sm:space-y-5">
+        <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
+          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
           <span>Experiencia Premium • Agendación Inmediata</span>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-slate-950 dark:text-white leading-[1.08]">
+        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-slate-950 dark:text-white leading-[1.12]">
           Tu momento de cuidado,{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">
             reservado en segundos.
           </span>
         </h1>
 
-        <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto font-normal leading-relaxed">
+        <p className="text-sm sm:text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto font-normal leading-relaxed">
           {lemaMarca ||
             'Explora nuestros servicios exclusivos, escoge a tu profesional favorito y agenda tu cita sin necesidad de registros.'}
         </p>
 
         {/* Badges de Confianza iOS */}
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-400">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <Check className="w-3.5 h-3.5 text-emerald-500" />
+            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
             Sin registros previos
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
             Pago directo en el salón
           </span>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <Clock className="w-3.5 h-3.5 text-emerald-500" />
+            <Clock className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
             Confirmación en vivo
           </span>
         </div>
       </section>
 
       {/* ─── 3. SELECTOR DE CATEGORÍAS TIPO SEGMENTED CONTROL DE IOS ──────── */}
-      <section id="servicios" className="max-w-5xl mx-auto px-4 sm:px-6 w-full mb-8">
+      <section id="servicios" className="max-w-5xl mx-auto px-3 sm:px-6 w-full mb-6 sm:mb-8">
         <div className="flex justify-center">
-          <div className="inline-flex p-1 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-lg border border-black/[0.04] dark:border-white/[0.04] overflow-x-auto max-w-full">
+          <div className="inline-flex p-1 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-lg border border-black/[0.04] dark:border-white/[0.04] overflow-x-auto max-w-full scrollbar-none touch-pan-x">
             <button
               type="button"
               onClick={() => setCategoriaActiva('todas')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
                 categoriaActiva === 'todas'
                   ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -548,7 +550,7 @@ export default function PortalReservaPage() {
                 key={cat.id}
                 type="button"
                 onClick={() => setCategoriaActiva(cat.id)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
                   categoriaActiva === cat.id
                     ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -562,26 +564,26 @@ export default function PortalReservaPage() {
       </section>
 
       {/* ─── 4. CATÁLOGO DE SERVICIOS EN TARJETAS ESTILO APPLE ───────────── */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 w-full space-y-4">
+      <section className="max-w-5xl mx-auto px-3 sm:px-6 w-full space-y-4">
         {cargando ? (
           <div className="py-16 flex justify-center">
             <Loader text="Cargando menú de servicios..." />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
             {serviciosFiltrados.map((serv) => (
               <div
                 key={serv.id}
                 onClick={() => handleAbrirSubVentana(serv)}
-                className="group relative cursor-pointer bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.08] rounded-[24px] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:scale-[1.01] transition-all duration-300 flex flex-col justify-between"
+                className="group relative cursor-pointer bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex flex-col justify-between"
               >
-                <div className="space-y-3">
+                <div className="space-y-2.5 sm:space-y-3">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-semibold tracking-tight text-slate-950 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-base sm:text-lg font-semibold tracking-tight text-slate-950 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                       {serv.nombre}
                     </h3>
                     <div className="text-right shrink-0">
-                      <span className="text-lg font-bold text-slate-950 dark:text-white">
+                      <span className="text-base sm:text-lg font-bold text-slate-950 dark:text-white">
                         {formatearMoneda(serv.precio_base)}
                       </span>
                     </div>
@@ -592,7 +594,7 @@ export default function PortalReservaPage() {
                   </p>
                 </div>
 
-                <div className="pt-5 mt-3 border-t border-black/[0.04] dark:border-white/[0.06] flex items-center justify-between text-xs">
+                <div className="pt-4 sm:pt-5 mt-3 border-t border-black/[0.04] dark:border-white/[0.06] flex items-center justify-between text-xs">
                   <div className="inline-flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
                     <Clock className="w-3.5 h-3.5 text-slate-400" />
                     <span>{serv.duracion_base_min} min</span>
@@ -619,23 +621,23 @@ export default function PortalReservaPage() {
           />
 
           {/* Contenedor de la Sub-Ventana */}
-          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[32px] sm:rounded-[32px] border border-black/[0.08] dark:border-white/[0.12] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col z-10">
+          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[28px] sm:rounded-[32px] border border-black/[0.08] dark:border-white/[0.12] shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] flex flex-col z-10">
             {/* Tirador superior tipo iPhone (Grab Handle) */}
             <div className="pt-3 pb-1 flex justify-center">
               <div className="w-10 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full" />
             </div>
 
             {/* Cabecera de la Sub-Ventana */}
-            <div className="px-6 py-3 border-b border-black/[0.05] dark:border-white/[0.08] flex items-center justify-between">
-              <div>
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+            <div className="px-4 sm:px-6 py-3 border-b border-black/[0.05] dark:border-white/[0.08] flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block truncate">
                   {pasoSubVentana === 1
                     ? '1. Horario y Especialista'
                     : pasoSubVentana === 2
                     ? '2. Datos de Contacto'
                     : '3. Reserva Exitosa'}
                 </span>
-                <h3 className="text-base font-semibold text-slate-900 dark:text-white truncate max-w-[280px]">
+                <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate max-w-[240px] sm:max-w-[340px]">
                   {servicioSel.nombre}
                 </h3>
               </div>
@@ -643,29 +645,29 @@ export default function PortalReservaPage() {
               <button
                 type="button"
                 onClick={handleCerrarSubVentana}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Contenido scrolleable de la Sub-Ventana */}
-            <div className="p-6 overflow-y-auto space-y-6">
+            <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 overscroll-contain">
               {/* PASO 1: HORARIO Y ESPECIALISTA */}
               {pasoSubVentana === 1 && (
-                <div className="space-y-6">
+                <div className="space-y-5 sm:space-y-6">
                   {/* Especialista */}
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">
                       ¿Con quién te gustaría atenderte?
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className="flex sm:grid sm:grid-cols-3 gap-2 overflow-x-auto pb-1 scrollbar-none snap-x touch-pan-x">
                       {empleados.map((emp) => (
                         <button
                           key={emp.id}
                           type="button"
                           onClick={() => setEmpleadoSel(emp)}
-                          className={`p-3 rounded-2xl border text-left transition-all ${
+                          className={`p-3 rounded-2xl border text-left transition-all min-w-[130px] sm:min-w-0 shrink-0 sm:shrink snap-start ${
                             empleadoSel?.id === emp.id
                               ? 'border-slate-900 dark:border-white bg-slate-50 dark:bg-slate-800/80 ring-1 ring-slate-900 dark:ring-white'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
@@ -690,7 +692,7 @@ export default function PortalReservaPage() {
                     <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">
                       Selecciona la Fecha
                     </label>
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x">
                       {proximosDias.map((d) => {
                         const sel = fechaSel === d.iso
                         return (
@@ -701,7 +703,7 @@ export default function PortalReservaPage() {
                               setFechaSel(d.iso)
                               setHoraSel('')
                             }}
-                            className={`min-w-[62px] py-2.5 px-2 rounded-2xl flex flex-col items-center justify-center border transition-all ${
+                            className={`min-w-[56px] sm:min-w-[62px] py-2 sm:py-2.5 px-2 rounded-2xl flex flex-col items-center justify-center border transition-all shrink-0 ${
                               sel
                                 ? 'bg-slate-950 dark:bg-white text-white dark:text-slate-950 border-slate-950 shadow-md'
                                 : 'bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100'
@@ -728,7 +730,7 @@ export default function PortalReservaPage() {
                         <Loader text="Buscando horarios..." />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-4 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                         {slots.map((slot) => {
                           const horaFormat = slot.hora_inicio.slice(0, 5)
                           const activa = horaSel === horaFormat
@@ -738,7 +740,7 @@ export default function PortalReservaPage() {
                               type="button"
                               disabled={!slot.disponible}
                               onClick={() => setHoraSel(horaFormat)}
-                              className={`py-2.5 px-2 rounded-xl text-xs font-semibold text-center transition-all ${
+                              className={`py-2.5 px-1.5 sm:px-2 rounded-xl text-xs font-semibold text-center transition-all ${
                                 !slot.disponible
                                   ? 'bg-slate-100 dark:bg-slate-800/40 text-slate-300 dark:text-slate-600 line-through cursor-not-allowed'
                                   : activa
@@ -823,7 +825,7 @@ export default function PortalReservaPage() {
                         value={notasCliente}
                         onChange={(e) => setNotasCliente(e.target.value)}
                         placeholder="Algún requerimiento previo..."
-                        className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs focus:ring-2 focus:ring-slate-950 dark:focus:ring-white focus:outline-none"
+                        className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-base sm:text-xs focus:ring-2 focus:ring-slate-950 dark:focus:ring-white focus:outline-none"
                       />
                     </div>
                   </div>
@@ -860,7 +862,7 @@ export default function PortalReservaPage() {
                     <span className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
                       Folio: {folioReserva}
                     </span>
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                       ¡Cita Agendada!
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
@@ -946,15 +948,15 @@ export default function PortalReservaPage() {
       )}
 
       {/* ─── 6. INFORMACIÓN Y UBICACIÓN DE LA TIENDA ─────────────────────── */}
-      <section id="contacto" className="max-w-4xl mx-auto px-4 sm:px-6 pt-16 text-center space-y-4">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
+      <section id="contacto" className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 text-center space-y-4">
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
           Visítanos en nuestras instalaciones
         </h2>
         <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
           Atendemos con puntualidad y con los más estrictos estándares de confort y bienestar.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 sm:pt-4 text-xs">
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-black/[0.05] dark:border-white/[0.08]">
             <MapPin className="w-4 h-4 mx-auto mb-2 text-slate-700 dark:text-slate-300" />
             <p className="font-semibold text-slate-900 dark:text-white">Dirección</p>
@@ -975,52 +977,65 @@ export default function PortalReservaPage() {
         </div>
       </section>
 
-      {/* ─── 7. FOOTER MINIMALISTA ────────────────────────────────────────── */}
-      <footer className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-6 text-center text-[11px] text-slate-400 space-y-2">
+      {/* ─── 7. FOOTER MINIMALISTA CON ACCESO ADMINISTRATIVO ─────────────── */}
+      <footer className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-28 sm:pb-32 text-center text-[11px] text-slate-400 space-y-3">
         <p>
           {configuracion.texto_pie_pagina ||
             `© ${new Date().getFullYear()} ${nombreMarca}. Todos los derechos reservados.`}
         </p>
+
+        {/* 🔐 CANDADO DISCRETO DE ACCESO ADMINISTRATIVO EXCLUSIVAMENTE AL FINAL DE LA PÁGINA */}
+        <div className="pt-2 flex justify-center items-center">
+          <Link
+            to="/login"
+            title="Acceso administrativo y de personal"
+            aria-label="Acceso para el personal / Administración"
+            className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-700 dark:text-slate-600 dark:hover:text-slate-300 transition-colors p-1.5 rounded-lg opacity-70 hover:opacity-100"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span className="text-[10px] tracking-wide">Acceso personal</span>
+          </Link>
+        </div>
       </footer>
 
-      {/* ─── 8. MENÚ INFERIOR FLOTANTE (DYNAMIC ISLAND / DOCK FLOTANTE ESTILO IPHONE) ── */}
-      <div className="fixed bottom-5 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
-        <div className="pointer-events-auto backdrop-blur-2xl bg-white/80 dark:bg-slate-950/80 border border-black/[0.08] dark:border-white/[0.12] shadow-[0_16px_40px_rgba(0,0,0,0.16)] rounded-full px-4 py-2 flex items-center gap-2 sm:gap-3 transition-all duration-300">
+      {/* ─── 8. MENÚ INFERIOR FLOTANTE PARA CLIENTES (SOLO VISTA CLIENTE) ── */}
+      <div className="fixed bottom-4 sm:bottom-5 inset-x-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-none">
+        <div className="pointer-events-auto backdrop-blur-2xl bg-white/85 dark:bg-slate-950/85 border border-black/[0.08] dark:border-white/[0.12] shadow-[0_16px_40px_rgba(0,0,0,0.16)] rounded-full px-3 sm:px-5 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-3 max-w-[calc(100vw-24px)] transition-all duration-300">
           {/* Botón Servicios */}
           <a
             href="#servicios"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <Layers className="w-4 h-4" />
-            <span className="hidden sm:inline">Servicios</span>
+            <Layers className="w-4 h-4 shrink-0" />
+            <span className="hidden xs:inline sm:inline">Servicios</span>
           </a>
 
           {/* Botón Agendar Cita (Call to action principal estilo Apple) */}
           <button
             type="button"
             onClick={() => handleAbrirSubVentana(servicios[0])}
-            className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-md hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-md hover:opacity-90 transition-opacity shrink-0"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
             <span>Agendar Cita</span>
           </button>
 
           {/* Botón Ubicación */}
           <a
             href="#contacto"
-            className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
           >
-            <Compass className="w-4 h-4" />
-            <span className="hidden sm:inline">Ubicación</span>
+            <Compass className="w-4 h-4 shrink-0" />
+            <span className="hidden xs:inline sm:inline">Ubicación</span>
           </a>
 
-          <div className="w-[1px] h-5 bg-black/[0.08] dark:bg-white/[0.12] mx-0.5" />
+          <div className="w-[1px] h-5 bg-black/[0.08] dark:bg-white/[0.12] mx-0.5 shrink-0" />
 
           {/* Alternar fondo blanco / oscuro en dock */}
           <button
             type="button"
             onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-full text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            className="p-1.5 sm:p-2 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors shrink-0"
             title={app?.theme === 'dark' ? 'Cambiar a fondo blanco' : 'Cambiar a fondo oscuro'}
             aria-label="Alternar fondo blanco y oscuro"
           >
@@ -1030,15 +1045,6 @@ export default function PortalReservaPage() {
               <Moon className="w-4 h-4" />
             )}
           </button>
-
-          {/* 🔐 CANDADO DISCRETO DE ACCESO ADMINISTRATIVO */}
-          <Link
-            to="/login"
-            title="Acceso para el personal / Administración"
-            className="p-2 rounded-full text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
-          >
-            <Lock className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </div>

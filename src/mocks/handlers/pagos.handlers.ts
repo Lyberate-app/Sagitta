@@ -398,3 +398,4 @@ export const pagosHandlers = [
     return HttpResponse.json({ success: true, message: 'Eliminado de lista de espera' })
   }),
 ]
+

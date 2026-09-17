@@ -1,8 +1,9 @@
-import { Menu, Bell, Sun, Moon, LogOut, User } from 'lucide-react'
+import { Menu, Sun, Moon, LogOut, User } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useContext } from 'react'
 import { AppContext } from '@/context/AppContext'
 import { Button } from '@/components/ui'
+import { CentroNotificaciones } from '@/components/integraciones'
 
 export function Navbar() {
   const { user, logout } = useAuth()
@@ -26,9 +27,7 @@ export function Navbar() {
       {/* Right */}
       <div className="flex items-center gap-2">
         {/* Notificaciones */}
-        <Button variant="ghost" size="sm" aria-label="Notificaciones">
-          <Bell className="w-5 h-5" />
-        </Button>
+        <CentroNotificaciones />
 
         {/* Tema */}
         <Button variant="ghost" size="sm" onClick={toggleTheme} aria-label="Cambiar tema">

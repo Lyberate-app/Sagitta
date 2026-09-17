@@ -65,3 +65,4 @@ export const pagosService = {
   cancelarListaEspera: (id: number) =>
     apiClient.delete<void>(`/lista-espera/${id}`),
 }
+

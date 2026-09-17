@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { AppProvider } from '@/context/AppContext'
+import { ConfiguracionProvider } from '@/context/ConfiguracionContext'
 import { PageWrapper } from '@/components/layout'
 import { Loader } from '@/components/ui'
 import { useAuth } from '@/hooks/useAuth'
@@ -13,6 +14,7 @@ import EmpleadosPage from '@/pages/EmpleadosPage'
 import ClientesPage from '@/pages/ClientesPage'
 import PagosPage from '@/pages/PagosPage'
 import IntegracionesPage from '@/pages/IntegracionesPage'
+import ConfiguracionPage from '@/pages/ConfiguracionPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -102,12 +104,12 @@ function AppRoutes() {
         }
       />
 
-      {/* Fase 5 */}
+      {/* Fase 5: Configuración y Marca Blanca */}
       <Route
         path="/ajustes"
         element={
           <PrivateRoute>
-            <div className="card p-8 text-center text-slate-400">Ajustes — Fase 5</div>
+            <ConfiguracionPage />
           </PrivateRoute>
         }
       />
@@ -120,12 +122,14 @@ function AppRoutes() {
 // ─── App raíz ─────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <AppProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
-    </AppProvider>
+    <ConfiguracionProvider>
+      <AppProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </AppProvider>
+    </ConfiguracionProvider>
   )
 }

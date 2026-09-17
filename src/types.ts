@@ -412,3 +412,53 @@ export type Theme = 'light' | 'dark' | 'system'
 
 export type VistaCalendario = 'mes' | 'semana' | 'dia' | 'lista'
 
+// ─── Fase 5: Configuración y Marca Blanca (White Label) ────────────────────
+export type PaletaColor =
+  | 'indigo'
+  | 'emerald'
+  | 'violet'
+  | 'rose'
+  | 'ocean'
+  | 'amber'
+  | 'slate'
+  | 'custom'
+
+export type FuenteTipografica =
+  | 'Inter'
+  | 'Roboto'
+  | 'Poppins'
+  | 'Montserrat'
+  | 'Outfit'
+
+export type RadioEsquinas = 'cuadrado' | 'suave' | 'moderno' | 'pronunciado'
+
+export interface ConfiguracionMarcaBlanca {
+  id: number
+  nombre_negocio: string
+  lema_negocio: string
+  logo_url: string
+  logo_dark_url: string
+  logo_icono_url: string
+  favicon_url: string
+  color_primario: string
+  paleta_predefinida: PaletaColor
+  fuente_tipografica: FuenteTipografica
+  radio_esquinas: RadioEsquinas
+  marca_blanca_activa: boolean
+  ocultar_marca_sistema: boolean
+  texto_pie_pagina: string
+  mostrar_powered_by: boolean
+  texto_powered_by?: string
+  email_soporte: string
+  telefono_soporte: string
+  sitio_web: string
+  moneda: string
+  simbolo_moneda: string
+  zona_horaria: string
+  formato_hora: '12h' | '24h'
+  formato_fecha: 'DD/MM/YYYY' | 'YYYY-MM-DD'
+  url_terminos?: string
+  url_privacidad?: string
+  updated_at?: string
+}
+

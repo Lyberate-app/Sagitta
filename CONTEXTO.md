@@ -7,12 +7,11 @@
 
 ## 📍 Estado Actual del Proyecto
 
-* **Fase Completada:** **Fase 4 — Integraciones y Notificaciones** ✅
-* **Próxima Fase:** **Fase 5 — Panel Admin y Personalización** 🔄
-* **Rama de Trabajo Actual:** `feat/fase-4-integraciones`
+* **Fase en Curso:** **Fase 5 — Panel Admin, Personalización y Marca Blanca (White Label)** 🔄
+* **Rama de Trabajo Actual:** `feat/fase-5-admin`
 * **Frontend:** React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 3.4 + PWA (Workbox) + MSW 2.6
 * **Backend:** PHP nativo + MySQL (a cargo del compañero; en frontend consumimos REST o mocks de MSW)
-* **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado con 0 errores TypeScript y bundle Vite generado).
+* **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado con 0 errores TypeScript y bundle Vite + PWA generado).
 
 ---
 
@@ -83,15 +82,25 @@
   * Servicio API (`src/services/integraciones.service.ts`):
     * Métodos desacoplados con tipado estricto para todas las operaciones de la fase.
 
-### 🔄 Fase 5 — Panel Admin y Personalización (Próxima a Desarrollar)
-* **Rama Planificada:** `feat/fase-5-admin`
-* **Objetivos:**
-  * Dashboard de métricas y KPIs de negocio (ingresos, volumen de reservas, tasa de cancelación, ocupación de personal).
-  * Gráficos interactivos de rendimiento mensual y por categoría.
-  * Personalización visual sin código: selector de paleta primaria, modo oscuro/claro por defecto, subida de logotipo y tipografía.
-  * Formulario de reserva embebible / Widget popup para sitios externos.
-  * Gestión de permisos por rol (Administrador, Recepción, Profesional).
-  * Herramientas de cumplimiento GDPR / privacidad (exportación y borrado de datos de clientes).
+### 🔄 Fase 5 — Panel Admin, Personalización y Marca Blanca (En Curso)
+* **Rama:** `feat/fase-5-admin`
+* **Entregables Implementados (Módulo de Marca Blanca Total):**
+  * Tipos en `src/types.ts`: `ConfiguracionMarcaBlanca`, `PaletaColor`, `FuenteTipografica`, `RadioEsquinas`.
+  * Contexto y Hook reactivo: `src/context/ConfiguracionContext.tsx` y `src/hooks/useConfiguracion.ts`.
+  * Inyección en caliente en el DOM: `document.title`, `<link rel="icon">` dinámico, Google Fonts (*Inter, Roboto, Poppins, Montserrat, Outfit*) y CSS variable `--color-brand-primary`.
+  * Adaptación de branding en toda la app: `Navbar.tsx` y `LoginPage.tsx` muestran logo/nombre del negocio sin hardcoding.
+  * Directivas de Marca Blanca: supresión total de referencias al sistema madre ("Sagitta") en pie de página, login, comprobantes y emails.
+  * Selector de 8 paletas predefinidas + Selector libre HEX + Selector de bordes.
+  * Componentes especializados (`src/components/configuracion/`):
+    * `PrevisualizadorMarcaBlanca.tsx`: Mockup reactivo tipo navegador en vivo.
+    * `GeneradorWidgetEmbebible.tsx`: Generador de snippets `<iframe>` y `<script>` para sitios externos (WordPress, Shopify, etc.).
+  * Página completa `/ajustes`: `src/pages/ConfiguracionPage.tsx` con 4 pestañas organizadas.
+  * Servicio y Mocks MSW: `src/services/configuracion.service.ts` y `src/mocks/handlers/configuracion.handlers.ts` con persistencia.
+  * Contrato y esquema SQL documentados para el compañero backend en `README.md`.
+* **Próximos Entregables de Fase 5:**
+  * Dashboard de métricas analíticas (KPIs) con gráficos interactivos.
+  * Gestión de roles y permisos (Administrador, Recepción, Profesional).
+  * Cumplimiento de privacidad y GDPR (solicitud y borrado de datos).
 
 ---
 

@@ -612,6 +612,66 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 
 ---
 
+### Portal Público de Reservas, Candado Oculto y Gestión de Roles ✅ `COMPLETADA`
+**Rama:** `feat/portal-reserva-y-roles`  
+**Descripción:** Entrada pública a la plataforma con agendación directa para clientes sin registro obligatorio, acceso administrativo camuflado mediante un icono de candado al pie de página, soporte multi-rol con persistencia en `localStorage` (Auditor Supremo, Admin de Tienda, Trabajador, Recepcionista) y módulo administrativo para dar de alta nuevos administradores y trabajadores.
+
+**Lo implementado:**
+- **Portal Público de Reservas (`/`):**
+  - La raíz ya no redirige a `/login`; presenta un portal elegante de reservas directas.
+  - **Navbar Público:** Muestra la identidad corporativa (Marca Blanca), enlaces a los servicios ofrecidos, información de contacto/WhatsApp directo, selector de sede e idioma. **Sin botones visibles de login ni registro de clientes**.
+  - **Flujo de Agendación sin Registro:**
+    1. Catálogo de servicios interactivo con filtros de categoría, duraciones y precios.
+    2. Selector de profesional y selector en tiempo real de turnos libres (mañana y tarde).
+    3. Formulario ágil de datos de contacto (Nombre, Teléfono/WhatsApp, Correo, Notas especiales) sin requerir contraseñas.
+    4. Confirmación instantánea con número de folio, detalles del servicio, botón para Google Calendar, descarga de `.ics` universal y aviso a WhatsApp.
+  - **Candado de Acceso Oculto:**
+    - Al final del pie de página (footer), se ubica un discreto icono de candado (`Lock`) que dirige a `/login` para el dueño, administradores o auditores supremos.
+- **Acceso Administrativo y Roles (`/login`):**
+  - Soporte de roles diferenciados con botones demo de **1 solo clic**:
+    - 🛡️ **Auditor Supremo / Superadmin:** `supremo@sagitta.app` / `Supremo123!` (acceso total y auditorías).
+    - 🏢 **Admin de Tienda:** `admin@sagitta.com` / `Admin123!` (gestión de tienda, finanzas y personal).
+    - 💼 **Trabajador / Profesional:** `empleado@tienda.com` / `Empleado123!` (agenda y atención).
+    - 🛎️ **Recepcionista:** `recepcion@tienda.com` / `Recepcion123!` (citas y cobros).
+  - Enlace de retorno al portal público de reservas.
+- **Módulo de Gestión de Usuarios y Trabajadores (`/usuarios`):**
+  - Directorio completo con buscador, filtros por rol, estado activo/inactivo y última fecha de conexión.
+  - Modal para agregar nuevos administradores y trabajadores con asignación de rol, contraseña y sucursal.
+  - Sincronización en caliente con `localStorage` (`sagitta_usuarios`), permitiendo que cualquier nuevo trabajador o admin creado pueda iniciar sesión al instante con sus credenciales.
+- **Enrutamiento y Menú:**
+  - Elemento *"Usuarios"* añadido a la barra lateral administrativa (`Sidebar.tsx`).
+  - Ruta `/usuarios` protegida con guard de autenticación.
+
+**Directivas y Esquema SQL para el Compañero Backend (MySQL):**
+```sql
+CREATE TABLE IF NOT EXISTS usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  rol ENUM('superadmin', 'admin', 'gerente', 'empleado', 'recepcionista', 'cliente') NOT NULL DEFAULT 'empleado',
+  telefono VARCHAR(50) NULL,
+  sucursal_id VARCHAR(64) NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  timezone VARCHAR(60) NOT NULL DEFAULT 'America/New_York',
+  ultimo_login TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (sucursal_id) REFERENCES tenants(id) ON DELETE SET NULL
+);
+```
+
+**Endpoints que el compañero backend debe implementar:**
+- `POST /api/auth/login`: Autenticación con verificación de `password_hash` (`bcrypt`) y retorno de JWT + perfil de usuario.
+- `GET /api/auth/me`: Retornar perfil del usuario según el token JWT enviado en la cabecera `Authorization`.
+- `POST /api/auth/logout`: Invalidación de token o sesión activa.
+- `GET /api/usuarios`: Listar usuarios del tenant o sistema (según rol del solicitante).
+- `POST /api/usuarios`: Registrar nuevo usuario (validar que administradores solo creen roles iguales o inferiores).
+- `PUT /api/usuarios/{id}`: Actualizar datos, rol, sucursal o estado activo del usuario.
+- `DELETE /api/usuarios/{id}`: Desactivar o eliminar usuario del sistema.
+
+---
+
 ## 🌿 Flujo de Trabajo Git
 
 ### Estrategia de ramas

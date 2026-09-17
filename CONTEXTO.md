@@ -7,8 +7,8 @@
 
 ## 📍 Estado Actual del Proyecto
 
-* **Fase en Curso:** **Fase 6 — Escalabilidad, Multi-Tenant, i18n y CRM** ✅ (Completada)
-* **Rama de Trabajo Actual:** `feat/fase-6-crm`
+* **Fase en Curso:** **Portal Público de Reservas, Candado Oculto y Gestión de Roles** ✅ (Completada)
+* **Rama de Trabajo Actual:** `feat/portal-reserva-y-roles`
 * **Frontend:** React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 3.4 + PWA (Workbox) + MSW 2.6
 * **Backend:** PHP nativo + MySQL (a cargo del compañero; en frontend consumimos REST o mocks de MSW)
 * **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado con 0 errores TypeScript y bundle Vite + PWA generado).
@@ -128,6 +128,32 @@
   * Documentación para Backend:
     * Esquema MySQL para tablas `tenants`, `crm_configs`, `api_keys` y `audit_logs` documentado en `README.md`.
     * Endpoints REST para API keys y webhook/sincronización CRM detallados en `README.md`.
+
+### ✅ Portal Público de Reservas, Candado Oculto y Gestión de Roles (Completada)
+* **Rama:** `feat/portal-reserva-y-roles`
+* **Entregables:**
+  * **Portal Público de Reservas en la Raíz (`/`):**
+    * Componente `PortalReservaPage.tsx`: Ya no redirige a `/login`; carga un portal moderno de atención directa.
+    * Navbar público limpio: sólo muestra la marca (Marca Blanca), enlaces a los servicios ofrecidos, información de contacto/WhatsApp directo, selector de sede e idioma. Sin enlaces visibles de login ni registro de clientes.
+    * Flujo de agendación sin registro: catálogo de servicios con filtros por categoría, selector de profesional y turnos libres en tiempo real, formulario ágil de contacto (Nombre, Teléfono/WhatsApp, Correo, Notas) y pantalla de confirmación con folio de cita (`CIT-XXXXX`) y botones de calendario (Google Calendar, `.ics` y WhatsApp).
+    * Candado de acceso administrativo oculto: Icono discreto de candado (`Lock`) en lo último del pie de página (footer) con enlace a `/login`.
+  * **Acceso Administrativo y Multi-Rol (`/login`):**
+    * Soporte para 4 perfiles principales con botones demo de 1 clic:
+      * 🛡️ **Auditor Supremo / Superadmin:** `supremo@sagitta.app` / `Supremo123!`
+      * 🏢 **Admin de Tienda:** `admin@sagitta.com` / `Admin123!`
+      * 💼 **Trabajador / Profesional:** `empleado@tienda.com` / `Empleado123!`
+      * 🛎️ **Recepcionista:** `recepcion@tienda.com` / `Recepcion123!`
+    * Botón de retorno al portal de reservas para clientes.
+  * **Servicio y Mocks con Persistencia LocalStorage:**
+    * `src/services/usuarios.service.ts`: Manejo de la colección `sagitta_usuarios` en `localStorage` con fallback a usuarios iniciales.
+    * `src/mocks/handlers/usuarios.handlers.ts`: Handlers MSW para endpoints `/api/usuarios`.
+    * Sincronización en `src/mocks/handlers/auth.handlers.ts`: Permite autenticarse dinámicamente con cualquier nuevo usuario creado en el panel.
+  * **Módulo de Gestión de Usuarios y Trabajadores (`/usuarios`):**
+    * Componente `UsuariosPage.tsx`: Directorio de personal y administradores, filtros por rol y buscador.
+    * Modal para crear nuevos administradores y trabajadores con asignación de contraseña y sucursal.
+    * Enlace "Usuarios" en la barra lateral administrativa (`Sidebar.tsx`).
+  * **Contrato Backend:**
+    * Tabla MySQL `usuarios` y endpoints documentados en `README.md`.
 
 ---
 

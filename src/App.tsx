@@ -18,6 +18,8 @@ import PagosPage from '@/pages/PagosPage'
 import IntegracionesPage from '@/pages/IntegracionesPage'
 import ConfiguracionPage from '@/pages/ConfiguracionPage'
 import CrmDesarrolladoresPage from '@/pages/CrmDesarrolladoresPage'
+import PortalReservaPage from '@/pages/PortalReservaPage'
+import UsuariosPage from '@/pages/UsuariosPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -32,7 +34,7 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<PortalReservaPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       <Route
@@ -94,6 +96,15 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <PagosPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/usuarios"
+        element={
+          <PrivateRoute>
+            <UsuariosPage />
           </PrivateRoute>
         }
       />

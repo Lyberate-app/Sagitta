@@ -5,6 +5,7 @@ import { AppContext } from '@/context/AppContext'
 import { Button } from '@/components/ui'
 import { CentroNotificaciones } from '@/components/integraciones'
 import { useConfiguracion } from '@/hooks/useConfiguracion'
+import { TenantSelector, I18nSelector } from '@/components/crm'
 
 export function Navbar() {
   const { user, logout } = useAuth()
@@ -39,10 +40,18 @@ export function Navbar() {
             {nombreMarca}
           </span>
         )}
+
+        {/* Multi-Tenant Switcher */}
+        <div className="hidden md:block pl-2 border-l border-slate-200 dark:border-slate-700">
+          <TenantSelector />
+        </div>
       </div>
 
       {/* Right */}
       <div className="flex items-center gap-2">
+        {/* Selector de Idioma (i18n) */}
+        <I18nSelector />
+
         {/* Notificaciones */}
         <CentroNotificaciones />
 

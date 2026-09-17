@@ -6,6 +6,7 @@ import { clientesHandlers }      from './clientes.handlers'
 import { pagosHandlers }         from './pagos.handlers'
 import { integracionesHandlers } from './integraciones.handlers'
 import { configuracionHandlers }  from './configuracion.handlers'
+import { crmHandlers }            from './crm.handlers'
 
 export const handlers = [
   ...authHandlers,
@@ -16,4 +17,5 @@ export const handlers = [
   ...pagosHandlers,
   ...integracionesHandlers,
   ...configuracionHandlers,
+  ...crmHandlers,
 ]

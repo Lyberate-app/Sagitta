@@ -8,6 +8,7 @@ import {
   Receipt,
   Share2,
   Settings,
+  Boxes,
   ChevronLeft,
 } from 'lucide-react'
 import { useContext } from 'react'
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { label: 'Clientes',      to: '/clientes',       icon: <Users           className="w-5 h-5" /> },
   { label: 'Finanzas',      to: '/finanzas',       icon: <Receipt         className="w-5 h-5" /> },
   { label: 'Integraciones', to: '/integraciones',  icon: <Share2          className="w-5 h-5" /> },
+  { label: 'CRM & API',     to: '/crm',            icon: <Boxes           className="w-5 h-5" /> },
   { label: 'Ajustes',       to: '/ajustes',        icon: <Settings        className="w-5 h-5" /> },
 ]
 

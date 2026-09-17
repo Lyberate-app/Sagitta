@@ -7,8 +7,8 @@
 
 ## 📍 Estado Actual del Proyecto
 
-* **Fase en Curso:** **Fase 5 — Panel Admin, Personalización y Marca Blanca (White Label)** 🔄
-* **Rama de Trabajo Actual:** `feat/fase-5-admin`
+* **Fase en Curso:** **Fase 6 — Escalabilidad, Multi-Tenant, i18n y CRM** ✅ (Completada)
+* **Rama de Trabajo Actual:** `feat/fase-6-crm`
 * **Frontend:** React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 3.4 + PWA (Workbox) + MSW 2.6
 * **Backend:** PHP nativo + MySQL (a cargo del compañero; en frontend consumimos REST o mocks de MSW)
 * **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado con 0 errores TypeScript y bundle Vite + PWA generado).
@@ -82,9 +82,9 @@
   * Servicio API (`src/services/integraciones.service.ts`):
     * Métodos desacoplados con tipado estricto para todas las operaciones de la fase.
 
-### 🔄 Fase 5 — Panel Admin, Personalización y Marca Blanca (En Curso)
+### ✅ Fase 5 — Panel Admin, Personalización y Marca Blanca (Completada)
 * **Rama:** `feat/fase-5-admin`
-* **Entregables Implementados (Módulo de Marca Blanca Total):**
+* **Entregables Implementados:**
   * Tipos en `src/types.ts`: `ConfiguracionMarcaBlanca`, `PaletaColor`, `FuenteTipografica`, `RadioEsquinas`.
   * Contexto y Hook reactivo: `src/context/ConfiguracionContext.tsx` y `src/hooks/useConfiguracion.ts`.
   * Inyección en caliente en el DOM: `document.title`, `<link rel="icon">` dinámico, Google Fonts (*Inter, Roboto, Poppins, Montserrat, Outfit*) y CSS variable `--color-brand-primary`.
@@ -97,10 +97,37 @@
   * Página completa `/ajustes`: `src/pages/ConfiguracionPage.tsx` con 4 pestañas organizadas.
   * Servicio y Mocks MSW: `src/services/configuracion.service.ts` y `src/mocks/handlers/configuracion.handlers.ts` con persistencia.
   * Contrato y esquema SQL documentados para el compañero backend en `README.md`.
-* **Próximos Entregables de Fase 5:**
-  * Dashboard de métricas analíticas (KPIs) con gráficos interactivos.
-  * Gestión de roles y permisos (Administrador, Recepción, Profesional).
-  * Cumplimiento de privacidad y GDPR (solicitud y borrado de datos).
+
+### ✅ Fase 6 — Escalabilidad, Multi-Tenant, i18n y CRM (Completada)
+* **Rama:** `feat/fase-6-crm`
+* **Entregables:**
+  * Tipos en `src/types.ts`: `Tenant`, `TenantPlan`, `Idioma`, `CrmProvider`, `CrmConfig`, `ApiKey`, `AuditLog`.
+  * Sistema Multi-Sucursal / Multi-Tenant (`src/context/TenantContext.tsx` & `src/hooks/useTenant.ts`):
+    * Gestión de sedes/franquicias activas con persistencia en `localStorage`.
+    * Distinción de planes por sucursal (`free`, `pro`, `enterprise`) y badges visuales.
+  * Motor de Internacionalización Reactivo i18n (`src/context/I18nContext.tsx` & `src/hooks/useI18n.ts`):
+    * Sin dependencias externas pesadas, 100% tipado con soporte de interpolación `t('key', { name })`.
+    * 4 idiomas con banderas y formatos de fecha: Español 🇪🇸 (`es`), English 🇺🇸 (`en`), Português 🇧🇷 (`pt`), Français 🇫🇷 (`fr`).
+  * Componentes UI (`src/components/crm/`):
+    * `TenantSelector.tsx`: Dropdown en el Navbar para conmutar sede con indicador de estado y plan.
+    * `I18nSelector.tsx`: Selector de idioma con bandera y cambio instantáneo en caliente.
+    * `ModalApiKey.tsx`: Modal para generar tokens de desarrollador con selección de permisos (`read:citas`, `write:citas`, `read:clientes`, `write:pagos`, `admin`) y copia segura de token único.
+    * `VisorOpenApi.tsx`: Consola interactiva OpenAPI v3.0 / Swagger embebida para probar endpoints, headers de autenticación, payloads y generar comandos `cURL` listos para terminal.
+  * Hub de Gestión `/crm` (`src/pages/CrmDesarrolladoresPage.tsx`):
+    * **Pestaña Conectores CRM:** Sincronización bidireccional con HubSpot, Salesforce, Zoho CRM, ActiveCampaign y Mailchimp. Mapeo de campos, estado de sync y botón de sincronización forzada en vivo.
+    * **Pestaña API Keys & Desarrolladores:** Listado de claves, estado activo/revocado, último uso, fecha de expiración y revocación inmediata.
+    * **Pestaña Documentación API:** Playground interactivo con especificación OpenAPI v3.0 descargable en formato `.json`.
+    * **Pestaña Auditoría & Seguridad:** Tabla de eventos de auditoría (login, updates, export, deletions) con filtros por acción/usuario, severidad y exportación directa a `.csv`.
+  * Mocks MSW y Servicio API:
+    * `src/services/crm.service.ts`: Métodos para tenants, conectores CRM, API keys, logs de auditoría y swagger spec.
+    * `src/mocks/handlers/crm.handlers.ts`: Mocks completos para todos los endpoints con generación de tokens mock (`sk_live_...`).
+  * Integración en Navegación y Shell:
+    * Enlace en `Sidebar.tsx` con icono `Network` hacia `/crm`.
+    * Integración de `TenantSelector` e `I18nSelector` en `Navbar.tsx`.
+    * Envoltorio global con `TenantProvider` e `I18nProvider` en `src/App.tsx`.
+  * Documentación para Backend:
+    * Esquema MySQL para tablas `tenants`, `crm_configs`, `api_keys` y `audit_logs` documentado en `README.md`.
+    * Endpoints REST para API keys y webhook/sincronización CRM detallados en `README.md`.
 
 ---
 

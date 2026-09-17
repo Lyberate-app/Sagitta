@@ -126,13 +126,17 @@ sagitta/
     │   ├── AuthContext.tsx         # Estado de autenticación: user, isAuthenticated, login/logout
     │   ├── AppContext.tsx          # Estado global: tema (dark/light), sidebar, sistema de toasts
     │   ├── ReservaContext.tsx      # Estado del wizard de reservas: pasos, carrito, servicios, fechas
-    │   └── ConfiguracionContext.tsx # Estado de Marca Blanca: branding, colores, fuentes, favicon dinámico
+    │   ├── ConfiguracionContext.tsx # Estado de Marca Blanca: branding, colores, fuentes, favicon dinámico
+    │   ├── TenantContext.tsx       # Estado Multi-Tenant: sucursal activa, cuota de citas y cambio de sede
+    │   └── I18nContext.tsx         # Estado multi-idioma (ES, EN, PT, FR) con diccionarios reactivos
     │
     ├── hooks/
     │   ├── useAuth.ts              # Acceso rápido al AuthContext
     │   ├── useApi.ts               # Hook genérico con estados: data, isLoading, error
     │   ├── useToast.ts             # Acceso al sistema de notificaciones toast
-    │   └── useConfiguracion.ts     # Acceso al contexto de Marca Blanca y personalización
+    │   ├── useConfiguracion.ts     # Acceso al contexto de Marca Blanca y personalización
+    │   ├── useTenant.ts            # Acceso a la sucursal activa y conmutación de tenant
+    │   └── useI18n.ts              # Acceso a traducciones y selector de idioma
     │
     ├── utils/
     │   └── calendar.ts             # Generador iCalendar (.ics) RFC 5545, Google Calendar y links WhatsApp
@@ -145,7 +149,8 @@ sagitta/
     │   ├── clientes.service.ts     # Directorio de clientes y búsqueda
     │   ├── pagos.service.ts        # Facturación, cupones, reembolsos, paquetes y lista de espera
     │   ├── integraciones.service.ts # Google Calendar, Meet, Zoom, Webhooks, Push y WhatsApp
-    │   └── configuracion.service.ts # Configuración general, identidad y directrices de marca blanca
+    │   ├── configuracion.service.ts # Configuración general, identidad y directrices de marca blanca
+    │   └── crm.service.ts          # Multi-tenant, sincronización CRM, API Keys y Audit Logs
     │
     ├── components/
     │   ├── ui/
@@ -163,7 +168,7 @@ sagitta/
     │   │   └── index.ts            # Barrel export de todos los UI
     │   │
     │   ├── layout/
-    │   │   ├── Navbar.tsx          # Barra superior: logo dinámico, toggle sidebar, notificaciones, usuario
+    │   │   ├── Navbar.tsx          # Barra superior: logo dinámico, TenantSelector, I18nSelector, usuario
     │   │   ├── Sidebar.tsx         # Menú lateral colapsable con NavLinks activos
     │   │   ├── PageWrapper.tsx     # Composición: Navbar + Sidebar + main + ToastContainer
     │   │   └── index.ts            # Barrel export
@@ -197,9 +202,16 @@ sagitta/
     │   │   ├── PlantillaEditor.tsx   # Editor de plantillas WhatsApp/Email/Push con preview
     │   │   └── index.ts
     │   │
-    │   └── configuracion/
-    │       ├── PrevisualizadorMarcaBlanca.tsx # Mockup en vivo de browser, navbar y hero
-    │       ├── GeneradorWidgetEmbebible.tsx   # Snippet iframe/script y opciones de embed
+    │   ├── configuracion/
+    │   │   ├── PrevisualizadorMarcaBlanca.tsx # Mockup en vivo de browser, navbar y hero
+    │   │   ├── GeneradorWidgetEmbebible.tsx   # Snippet iframe/script y opciones de embed
+    │   │   └── index.ts
+    │   │
+    │   └── crm/
+    │       ├── TenantSelector.tsx    # Dropdown de sucursales en Navbar con badge de plan
+    │       ├── I18nSelector.tsx      # Selector de idioma en Navbar con banderas (ES, EN, PT, FR)
+    │       ├── ModalApiKey.tsx       # Modal para generar tokens de API con scopes
+    │       ├── VisorOpenApi.tsx      # Visor interactivo Swagger/OpenAPI v3.0 con curl
     │       └── index.ts
     │
     ├── pages/
@@ -213,6 +225,7 @@ sagitta/
     │   ├── PagosPage.tsx           # Panel de finanzas: facturas, cupones, reembolsos y lista de espera
     │   ├── IntegracionesPage.tsx   # Hub de integraciones: Calendarios, Meet/Zoom, WhatsApp, Push y Webhooks
     │   ├── ConfiguracionPage.tsx   # Panel de configuración general y marca blanca total (/ajustes)
+    │   ├── CrmDesarrolladoresPage.tsx # Hub de CRM, API Keys, OpenAPI y Audit Logs (/crm)
     │   └── NotFoundPage.tsx        # Página 404 con botón de regreso
     │
     └── mocks/
@@ -226,6 +239,7 @@ sagitta/
             ├── pagos.handlers.ts         # Mock: facturas, cupones, reembolsos, paquetes y lista de espera
             ├── integraciones.handlers.ts # Mock: integraciones, webhooks, notificaciones y plantillas
             ├── configuracion.handlers.ts # Mock: configuración del negocio y marca blanca
+            ├── crm.handlers.ts           # Mock: multi-tenant, conectores CRM, API keys y audit logs
             └── index.ts                  # Agrupa todos los handlers (crece con cada fase)
 ```
 
@@ -517,15 +531,84 @@ CREATE TABLE IF NOT EXISTS configuracion_negocio (
 
 ---
 
-### Fase 6 — Escalabilidad y CRM 🚀 `ROADMAP`
+### Fase 6 — Escalabilidad, Multi-Tenant, i18n y CRM ✅ `COMPLETADA`
 **Rama:** `feat/fase-6-crm`  
-**Descripción:** Preparar el sistema para crecer y conectarse a CRMs externos.
+**Descripción:** Escalabilidad empresarial para convertir Sagitta en una plataforma SaaS completa: multi-sucursal/multi-negocio, soporte multi-idioma (i18n), integración bidireccional con CRMs (HubSpot, Salesforce), claves de API pública para desarrolladores y bitácora de auditoría (Audit Logs).
 
-**Lo que incluye:**
-- Integración con HubSpot / Salesforce vía Webhook
-- API pública documentada (Swagger/OpenAPI)
-- Multi-idioma (i18n)
-- Multi-tenant (varios negocios bajo la misma plataforma)
+**Lo implementado:**
+- **Arquitectura Multi-Tenant (Multi-Sede):**
+  - Selector de sucursal (`TenantSelector.tsx`) integrado en la barra de navegación con indicador del plan activo (*Starter*, *Pro*, *Enterprise*).
+  - Contexto `TenantContext.tsx` con aislamiento de datos y conmutación de tenant persistida en `localStorage` y cabecera HTTP `X-Tenant-ID`.
+  - Capacidad para crear nuevas sucursales o franquicias desde la interfaz.
+- **Internacionalización y Multi-Idioma (i18n):**
+  - Contexto liviano y reactivo `I18nContext.tsx` con diccionarios para **Español (ES)**, **Inglés (EN)**, **Portugués (PT)** y **Francés (FR)**.
+  - Selector de idioma en el Navbar (`I18nSelector.tsx`) con banderas y detección automática del navegador.
+- **Conectores CRM (HubSpot, Salesforce, Pipedrive, Zoho):**
+  - Tarjetas de integración con estado en vivo, cuenta conectada, recuento de registros sincronizados y botón de *Sincronizar Ahora*.
+  - Sincronización bidireccional de clientes como Contactos y citas como Deals/Oportunidades comerciales.
+- **Portal de Desarrolladores y Claves de API (`ApiKey`):**
+  - Generador de tokens secretos de API (`sag_live_...`) con modal (`ModalApiKey.tsx`), copiado seguro y niveles de permiso (`read`, `write`, `admin`).
+  - Capacidad de revocar tokens en tiempo real.
+- **Explorador OpenAPI / Swagger v3.0 (`VisorOpenApi.tsx`):**
+  - Especificación de endpoints (`/api/citas`, `/api/citas/disponibilidad`, `/api/servicios`), cabeceras requeridas, generador de comandos `cURL` interactivo y consola para probar respuestas en vivo.
+- **Bitácora de Auditoría Empresarial (Audit Logs):**
+  - Registro cronológico detallado: usuario, email, rol, acción, módulo, dirección IP, severidad (`info`, `warning`, `error`) y detalles.
+  - Filtros en tiempo real por severidad, buscador por texto y **exportación directa a CSV descargable**.
+- **Página Centralizada:**
+  - Nueva ruta y módulo accesible en `/crm` y en el menú lateral ([`CrmDesarrolladoresPage.tsx`](file:///c:/Users/Silvio/Documents/SistemaDeCitas/Sagitta/src/pages/CrmDesarrolladoresPage.tsx)).
+
+**Directivas y Esquema SQL para el Compañero Backend (MySQL):**
+```sql
+-- 1. Tabla de Sucursales / Tenants
+CREATE TABLE IF NOT EXISTS tenants (
+  id VARCHAR(64) PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  slug VARCHAR(120) UNIQUE NOT NULL,
+  plan ENUM('starter', 'pro', 'enterprise') NOT NULL DEFAULT 'pro',
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  es_principal TINYINT(1) NOT NULL DEFAULT 0,
+  direccion VARCHAR(255) NULL,
+  telefono VARCHAR(50) NULL,
+  citas_mes INT DEFAULT 0,
+  limite_citas INT DEFAULT 500,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Tabla de Tokens de API para Desarrolladores
+CREATE TABLE IF NOT EXISTS api_keys (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tenant_id VARCHAR(64) NOT NULL,
+  nombre VARCHAR(120) NOT NULL,
+  token_hash VARCHAR(255) NOT NULL,
+  permisos ENUM('read', 'write', 'admin') NOT NULL DEFAULT 'read',
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  ultimo_uso TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
+);
+
+-- 3. Tabla de Bitácora de Auditoría
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tenant_id VARCHAR(64) NOT NULL,
+  usuario VARCHAR(120) NOT NULL,
+  email VARCHAR(120) NOT NULL,
+  rol VARCHAR(50) NOT NULL,
+  accion VARCHAR(120) NOT NULL,
+  modulo VARCHAR(50) NOT NULL,
+  ip VARCHAR(45) NOT NULL,
+  detalles TEXT NULL,
+  nivel ENUM('info', 'warning', 'error') NOT NULL DEFAULT 'info',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
+);
+```
+
+**Endpoints que el compañero backend debe implementar:**
+- `GET /api/tenants`, `POST /api/tenants`, `PUT /api/tenants/{id}`
+- `GET /api/crm/conectores`, `PUT /api/crm/conectores/{id}`, `POST /api/crm/conectores/{id}/sync`
+- `GET /api/api-keys`, `POST /api/api-keys`, `DELETE /api/api-keys/{id}`
+- `GET /api/audit-logs?search={search}&nivel={nivel}`
 
 ---
 

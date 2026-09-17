@@ -125,12 +125,14 @@ sagitta/
     ├── context/
     │   ├── AuthContext.tsx         # Estado de autenticación: user, isAuthenticated, login/logout
     │   ├── AppContext.tsx          # Estado global: tema (dark/light), sidebar, sistema de toasts
-    │   └── ReservaContext.tsx      # Estado del wizard de reservas: pasos, carrito, servicios, fechas
+    │   ├── ReservaContext.tsx      # Estado del wizard de reservas: pasos, carrito, servicios, fechas
+    │   └── ConfiguracionContext.tsx # Estado de Marca Blanca: branding, colores, fuentes, favicon dinámico
     │
     ├── hooks/
     │   ├── useAuth.ts              # Acceso rápido al AuthContext
     │   ├── useApi.ts               # Hook genérico con estados: data, isLoading, error
-    │   └── useToast.ts             # Acceso al sistema de notificaciones toast
+    │   ├── useToast.ts             # Acceso al sistema de notificaciones toast
+    │   └── useConfiguracion.ts     # Acceso al contexto de Marca Blanca y personalización
     │
     ├── utils/
     │   └── calendar.ts             # Generador iCalendar (.ics) RFC 5545, Google Calendar y links WhatsApp
@@ -142,7 +144,8 @@ sagitta/
     │   ├── empleados.service.ts    # Directorio de profesionales, horarios y disponibilidad
     │   ├── clientes.service.ts     # Directorio de clientes y búsqueda
     │   ├── pagos.service.ts        # Facturación, cupones, reembolsos, paquetes y lista de espera
-    │   └── integraciones.service.ts # Google Calendar, Meet, Zoom, Webhooks, Push y WhatsApp
+    │   ├── integraciones.service.ts # Google Calendar, Meet, Zoom, Webhooks, Push y WhatsApp
+    │   └── configuracion.service.ts # Configuración general, identidad y directrices de marca blanca
     │
     ├── components/
     │   ├── ui/
@@ -160,7 +163,7 @@ sagitta/
     │   │   └── index.ts            # Barrel export de todos los UI
     │   │
     │   ├── layout/
-    │   │   ├── Navbar.tsx          # Barra superior: logo, toggle sidebar, CentroNotificaciones, usuario
+    │   │   ├── Navbar.tsx          # Barra superior: logo dinámico, toggle sidebar, notificaciones, usuario
     │   │   ├── Sidebar.tsx         # Menú lateral colapsable con NavLinks activos
     │   │   ├── PageWrapper.tsx     # Composición: Navbar + Sidebar + main + ToastContainer
     │   │   └── index.ts            # Barrel export
@@ -188,14 +191,19 @@ sagitta/
     │   │   ├── ModalListaEspera.tsx  # Modal para ingresar a lista de espera
     │   │   └── index.ts
     │   │
-    │   └── integraciones/
-    │       ├── CentroNotificaciones.tsx # Dropdown interactivo en campana del Navbar
-    │       ├── ModalWebhook.tsx      # Modal para crear webhooks con firma HMAC SHA-256
-    │       ├── PlantillaEditor.tsx   # Editor de plantillas WhatsApp/Email/Push con preview
+    │   ├── integraciones/
+    │   │   ├── CentroNotificaciones.tsx # Dropdown interactivo en campana del Navbar
+    │   │   ├── ModalWebhook.tsx      # Modal para crear webhooks con firma HMAC SHA-256
+    │   │   ├── PlantillaEditor.tsx   # Editor de plantillas WhatsApp/Email/Push con preview
+    │   │   └── index.ts
+    │   │
+    │   └── configuracion/
+    │       ├── PrevisualizadorMarcaBlanca.tsx # Mockup en vivo de browser, navbar y hero
+    │       ├── GeneradorWidgetEmbebible.tsx   # Snippet iframe/script y opciones de embed
     │       └── index.ts
     │
     ├── pages/
-    │   ├── LoginPage.tsx           # Login split: branding izq + formulario der
+    │   ├── LoginPage.tsx           # Login split: branding dinámico + formulario der
     │   ├── DashboardPage.tsx       # Dashboard con KPIs operativos, citas del día y accesos
     │   ├── CitasPage.tsx           # Gestión de citas (vistas: mes, semana, lista + modal de detalle)
     │   ├── NuevaCitaPage.tsx       # Asistente de reservas paso a paso con carrito y recurrencia
@@ -204,6 +212,7 @@ sagitta/
     │   ├── ClientesPage.tsx        # Directorio de clientes con búsqueda y registro
     │   ├── PagosPage.tsx           # Panel de finanzas: facturas, cupones, reembolsos y lista de espera
     │   ├── IntegracionesPage.tsx   # Hub de integraciones: Calendarios, Meet/Zoom, WhatsApp, Push y Webhooks
+    │   ├── ConfiguracionPage.tsx   # Panel de configuración general y marca blanca total (/ajustes)
     │   └── NotFoundPage.tsx        # Página 404 con botón de regreso
     │
     └── mocks/
@@ -216,6 +225,7 @@ sagitta/
             ├── clientes.handlers.ts      # Mock: /clientes y búsqueda reactiva
             ├── pagos.handlers.ts         # Mock: facturas, cupones, reembolsos, paquetes y lista de espera
             ├── integraciones.handlers.ts # Mock: integraciones, webhooks, notificaciones y plantillas
+            ├── configuracion.handlers.ts # Mock: configuración del negocio y marca blanca
             └── index.ts                  # Agrupa todos los handlers (crece con cada fase)
 ```
 
@@ -435,20 +445,75 @@ VITE_USE_MOCKS=false
 
 ---
 
-### Fase 5 — Panel Admin y Personalización 🔄 `PRÓXIMA`
+### Fase 5 — Panel Admin, Personalización y Marca Blanca (White Label) 🔄 `EN DESARROLLO`
 **Rama:** `feat/fase-5-admin`  
-**Descripción:** Dashboard analítico integral para el negocio, reportes exportables y herramientas avanzadas de personalización visual y branding sin código.
+**Descripción:** Módulo central de configuración para revendedores y negocios: personalización de identidad corporativa, paletas dinámicas, tipografías, supresión total de marca base, widget embebible y dashboard analítico.
 
-**Lo que incluye:**
+**Lo implementado (Módulo de Marca Blanca y Configuración):**
+- **Identidad Corporativa Dinámica:**
+  - Configuración de nombre comercial del negocio y lema/eslogan.
+  - Inyección reactiva en el `<title>` del navegador (`document.title`) y favicon dinámico.
+  - Carga de logotipos para tema claro, tema oscuro e isotipo reducido para barra colapsada.
+  - Reemplazo en caliente de logos y títulos en `Navbar.tsx` y `LoginPage.tsx`.
+- **Directivas Estrictas de Marca Blanca (White Label):**
+  - Toggle maestro de Marca Blanca: suprime cualquier mención a "Sagitta" o enlaces a la plataforma creadora.
+  - Ocultación de &quot;Powered by&quot; y reemplazo del texto de Copyright del pie de página.
+- **Personalización Visual & Temas:**
+  - 8 Paletas de color: *Índigo Sagitta*, *Esmeralda Vital*, *Violeta Luxe*, *Rosa Carmín*, *Azul Océano*, *Ámbar Cálido*, *Slate Minimal* y selector *Personalizado HEX*.
+  - Inyección de CSS Custom Properties (`--color-brand-primary`).
+  - Selector de fuentes tipográficas (*Inter*, *Roboto*, *Poppins*, *Montserrat*, *Outfit*) con inyección dinámica de Google Fonts.
+  - Configuración de curvatura de esquinas (`cuadrado`, `suave`, `moderno`, `pronunciado`).
+- **Previsualizador en Tiempo Real (`PrevisualizadorMarcaBlanca.tsx`):**
+  - Panel sticky interactivo que simula una ventana de navegador, barra de navegación, banner de bienvenida y pie de página conforme el usuario ajusta colores, logos y textos.
+- **Generador de Widget Embebible (`GeneradorWidgetEmbebible.tsx`):**
+  - Generador de código `<iframe>` y `<script>` responsivo con selector de altura y tema para insertar el motor de reservas en sitios externos (WordPress, Wix, Shopify, etc.).
+- **Datos Regionales y Soporte:**
+  - Moneda principal (USD, EUR, MXN, COP, ARS, etc.), símbolo, zona horaria y formato horario (12h/24h).
+  - Canales de atención: email de soporte, teléfono/WhatsApp y enlaces a términos legales.
+
+**Directivas y Esquema de Base de Datos para el Compañero Backend (MySQL):**
+```sql
+CREATE TABLE IF NOT EXISTS configuracion_negocio (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre_negocio VARCHAR(120) NOT NULL DEFAULT 'Sagitta',
+  lema_negocio VARCHAR(255) NULL,
+  logo_url TEXT NULL,
+  logo_dark_url TEXT NULL,
+  logo_icono_url TEXT NULL,
+  favicon_url TEXT NULL,
+  color_primario VARCHAR(10) NOT NULL DEFAULT '#6366f1',
+  paleta_predefinida VARCHAR(30) NOT NULL DEFAULT 'indigo',
+  fuente_tipografica VARCHAR(50) NOT NULL DEFAULT 'Inter',
+  radio_esquinas VARCHAR(20) NOT NULL DEFAULT 'moderno',
+  marca_blanca_activa TINYINT(1) NOT NULL DEFAULT 0,
+  ocultar_marca_sistema TINYINT(1) NOT NULL DEFAULT 0,
+  texto_pie_pagina TEXT NULL,
+  mostrar_powered_by TINYINT(1) NOT NULL DEFAULT 1,
+  texto_powered_by VARCHAR(120) NULL,
+  email_soporte VARCHAR(120) NULL,
+  telefono_soporte VARCHAR(50) NULL,
+  sitio_web VARCHAR(255) NULL,
+  moneda VARCHAR(10) NOT NULL DEFAULT 'USD',
+  simbolo_moneda VARCHAR(5) NOT NULL DEFAULT '$',
+  zona_horaria VARCHAR(60) NOT NULL DEFAULT 'America/New_York',
+  formato_hora ENUM('12h', '24h') NOT NULL DEFAULT '12h',
+  formato_fecha VARCHAR(20) NOT NULL DEFAULT 'DD/MM/YYYY',
+  url_terminos TEXT NULL,
+  url_privacidad TEXT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+```
+
+**Endpoints que el compañero backend debe implementar:**
+- `GET /api/configuracion`: Obtener configuración actual del negocio y marca blanca
+- `PUT /api/configuracion`: Actualizar campos de marca blanca y personalización
+- `POST /api/configuracion/reset`: Restablecer a valores por defecto del sistema
+
+**Resto de la Fase 5 (En Proceso):**
 - **Dashboard de métricas (KPIs):** ingresos, ocupación, tasa de cancelación, conversiones
-- **Gráficos interactivos:** líneas, barras, donut (Recharts o Chart.js)
-- **Diseño personalizable:** colores, fuentes, logo desde el panel sin código
-- **Popup integrado:** formulario de reservas embebible en cualquier web
-- **Formulario tipo catálogo:** búsqueda por categorías
-- **Galerías de fotos:** imágenes por servicio
+- **Gráficos interactivos:** líneas, barras, donut
 - **Permisos granulares por rol:** qué puede ver y hacer cada rol
 - **GDPR:** panel para que el cliente elimine sus propios datos
-- **Vistas flexibles:** calendar drag & drop, exportar a Excel/PDF
 
 ---
 

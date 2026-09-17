@@ -3,11 +3,13 @@ import { Navigate } from 'react-router-dom'
 import { Mail, Lock, Eye, EyeOff, CalendarDays } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
+import { useConfiguracion } from '@/hooks/useConfiguracion'
 import { Button, Input } from '@/components/ui'
 
 export default function LoginPage() {
   const { isAuthenticated, login } = useAuth()
   const { toast } = useToast()
+  const { configuracion, nombreMarca, lemaMarca } = useConfiguracion()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -41,12 +43,20 @@ export default function LoginPage() {
       {/* Left — Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 flex-col items-center justify-center p-12 text-white">
         <div className="max-w-md text-center space-y-6">
-          <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto">
-            <CalendarDays className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold">Sagitta</h1>
+          {configuracion.logo_url ? (
+            <img
+              src={configuracion.logo_url}
+              alt={nombreMarca}
+              className="max-h-24 mx-auto object-contain bg-white/10 p-3 rounded-2xl"
+            />
+          ) : (
+            <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center mx-auto">
+              <CalendarDays className="w-10 h-10 text-white" />
+            </div>
+          )}
+          <h1 className="text-4xl font-bold">{nombreMarca}</h1>
           <p className="text-primary-200 text-lg leading-relaxed">
-            Sistema de reservas y citas inteligente. Gestiona tu agenda con precisión.
+            {lemaMarca || 'Sistema de reservas y citas inteligente. Gestiona tu agenda con precisión.'}
           </p>
           <div className="grid grid-cols-3 gap-4 pt-4">
             {['Reservas', 'Empleados', 'Analítica'].map((f) => (
@@ -63,10 +73,18 @@ export default function LoginPage() {
         <div className="w-full max-w-sm space-y-8">
           {/* Logo móvil */}
           <div className="lg:hidden text-center">
-            <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
-              <CalendarDays className="w-7 h-7 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold">Sagitta</h1>
+            {configuracion.logo_url ? (
+              <img
+                src={configuracion.logo_url}
+                alt={nombreMarca}
+                className="h-14 mx-auto object-contain mb-3"
+              />
+            ) : (
+              <div className="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <CalendarDays className="w-7 h-7 text-white" />
+              </div>
+            )}
+            <h1 className="text-2xl font-bold">{nombreMarca}</h1>
           </div>
 
           <div>

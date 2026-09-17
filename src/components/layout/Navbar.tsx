@@ -4,15 +4,22 @@ import { useContext } from 'react'
 import { AppContext } from '@/context/AppContext'
 import { Button } from '@/components/ui'
 import { CentroNotificaciones } from '@/components/integraciones'
+import { useConfiguracion } from '@/hooks/useConfiguracion'
 
 export function Navbar() {
   const { user, logout } = useAuth()
   const app = useContext(AppContext)
+  const { configuracion, nombreMarca } = useConfiguracion()
 
   const toggleTheme = () => {
     if (!app) return
     app.setTheme(app.theme === 'dark' ? 'light' : 'dark')
   }
+
+  const logoUrl =
+    app?.theme === 'dark' && configuracion.logo_dark_url
+      ? configuracion.logo_dark_url
+      : configuracion.logo_url
 
   return (
     <header className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky top-0 z-30">
@@ -21,7 +28,17 @@ export function Navbar() {
         <Button variant="ghost" size="sm" onClick={() => app?.toggleSidebar()} aria-label="Toggle sidebar">
           <Menu className="w-5 h-5" />
         </Button>
-        <span className="font-bold text-primary-600 text-lg tracking-tight">Sagitta</span>
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={nombreMarca}
+            className="h-8 max-w-[140px] object-contain"
+          />
+        ) : (
+          <span className="font-bold text-primary-600 text-lg tracking-tight">
+            {nombreMarca}
+          </span>
+        )}
       </div>
 
       {/* Right */}

@@ -1,4 +1,4 @@
-import { useState, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import {
   Palette,
   Shield,
@@ -56,6 +56,11 @@ export default function ConfiguracionPage() {
   const [tabActivo, setTabActivo] = useState<TabConfig>('marca_blanca')
   const [formData, setFormData] = useState<ConfiguracionMarcaBlanca>({ ...configuracion })
   const [guardando, setGuardando] = useState(false)
+
+  // Sincronizar formulario si cambia la configuración base
+  useEffect(() => {
+    setFormData({ ...configuracion })
+  }, [configuracion])
 
   // Manejar cambios en el formulario local
   const handleChange = <K extends keyof ConfiguracionMarcaBlanca>(

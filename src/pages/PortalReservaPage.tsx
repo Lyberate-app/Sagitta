@@ -33,6 +33,8 @@ import { serviciosService } from '@/services/servicios.service'
 import { empleadosService } from '@/services/empleados.service'
 import { citasService } from '@/services/citas.service'
 import { clientesService } from '@/services/clientes.service'
+import { pagosService } from '@/services/pagos.service'
+import { storageService } from '@/services/storage.service'
 import { Servicio, Empleado, SlotDisponible, Cita, CategoriaServicio } from '@/types'
 import {
   descargarArchivoIcs,
@@ -204,10 +206,19 @@ export default function PortalReservaPage() {
   const formatearMoneda = (monto: number) =>
     `${configuracion.simbolo_moneda || '$'}${monto.toFixed(2)}`
 
-  // Catálogos
-  const [servicios, setServicios] = useState<Servicio[]>(SERVICIOS_SEMILLA_DEFAULT)
-  const [categorias, setCategorias] = useState<CategoriaServicio[]>(CATEGORIAS_SEMILLA)
-  const [empleados, setEmpleados] = useState<Empleado[]>(EMPLEADOS_SEMILLA)
+  // Catálogos reactivos desde almacenamiento local sincronizado
+  const [servicios, setServicios] = useState<Servicio[]>(() => {
+    const list = storageService.getServicios()
+    return list.length > 0 ? list : SERVICIOS_SEMILLA_DEFAULT
+  })
+  const [categorias, setCategorias] = useState<CategoriaServicio[]>(() => {
+    const cats = storageService.getCategorias()
+    return cats.length > 0 ? cats : CATEGORIAS_SEMILLA
+  })
+  const [empleados, setEmpleados] = useState<Empleado[]>(() => {
+    const emps = storageService.getEmpleados()
+    return emps.length > 0 ? emps : EMPLEADOS_SEMILLA
+  })
   const [cargando, setCargando] = useState(true)
 
   // Filtros
@@ -442,6 +453,29 @@ export default function PortalReservaPage() {
           },
           created_at: new Date().toISOString(),
         }
+      }
+
+      // Registrar factura automática para el panel de finanzas
+      try {
+        await pagosService.crearFactura({
+          cita_id: citaFinal.id,
+          cliente_id: clienteId,
+          subtotal: servicioSel.precio_base,
+          descuento: 0,
+          total: servicioSel.precio_base,
+          metodo_pago: 'efectivo',
+          estado: 'pagada',
+          items: [
+            {
+              descripcion: `${servicioSel.nombre} (${durMin} min)`,
+              cantidad: 1,
+              precio_unitario: servicioSel.precio_base,
+              total: servicioSel.precio_base,
+            },
+          ],
+        })
+      } catch {
+        // Fallback silencioso
       }
 
       const folio = `SAG-${Math.floor(10000 + Math.random() * 90000)}`

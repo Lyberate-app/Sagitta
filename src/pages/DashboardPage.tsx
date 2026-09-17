@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom'
 import { CalendarDays, Users, Briefcase, TrendingUp, Plus, Clock, ArrowRight, Receipt, Share2 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { Badge, Button, Loader } from '@/components/ui'
-import { Cita } from '@/types'
+import { Cita, Cliente, Empleado, Factura } from '@/types'
 import { citasService } from '@/services/citas.service'
+import { clientesService } from '@/services/clientes.service'
+import { empleadosService } from '@/services/empleados.service'
+import { pagosService } from '@/services/pagos.service'
+import { useConfiguracion } from '@/hooks/useConfiguracion'
 
 interface StatCard {
   label: string
@@ -17,23 +21,40 @@ interface StatCard {
 
 export default function DashboardPage() {
   const { user } = useAuth()
+  const { configuracion } = useConfiguracion()
   const [citas, setCitas] = useState<Cita[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
+  const [empleados, setEmpleados] = useState<Empleado[]>([])
+  const [facturas, setFacturas] = useState<Factura[]>([])
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    citasService
-      .getAll()
-      .then((res) => {
-        if (res.data) setCitas(res.data)
+    Promise.allSettled([
+      citasService.getAll(),
+      clientesService.getAll(),
+      empleadosService.getAll(),
+      pagosService.getFacturas(),
+    ])
+      .then(([resCitas, resCli, resEmp, resFac]) => {
+        if (resCitas.status === 'fulfilled' && resCitas.value.data) setCitas(resCitas.value.data)
+        if (resCli.status === 'fulfilled' && resCli.value.data) setClientes(resCli.value.data)
+        if (resEmp.status === 'fulfilled' && resEmp.value.data) setEmpleados(resEmp.value.data)
+        if (resFac.status === 'fulfilled' && resFac.value.data) setFacturas(resFac.value.data)
       })
       .finally(() => setCargando(false))
   }, [])
 
+  const totalIngresos = facturas
+    .filter((f) => f.estado === 'pagada')
+    .reduce((acc, f) => acc + f.total, 0)
+
+  const simbolo = configuracion.simbolo_moneda || '$'
+
   const stats: StatCard[] = [
-    { label: 'Citas programadas', value: String(citas.length || 3), change: '+12%', positive: true, icon: <CalendarDays className="w-6 h-6" />, color: 'text-primary-500 bg-primary-50 dark:bg-primary-900/30' },
-    { label: 'Clientes activos',  value: '5',                       change: '+5%',  positive: true, icon: <Users        className="w-6 h-6" />, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' },
-    { label: 'Profesionales',     value: '3',                       change: '0%',   positive: true, icon: <Briefcase    className="w-6 h-6" />, color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/30' },
-    { label: 'Ingresos mes',      value: '$4,320',                  change: '+18%', positive: true, icon: <TrendingUp   className="w-6 h-6" />, color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/30' },
+    { label: 'Citas programadas', value: String(citas.length), change: '+12%', positive: true, icon: <CalendarDays className="w-6 h-6" />, color: 'text-primary-500 bg-primary-50 dark:bg-primary-900/30' },
+    { label: 'Clientes registrados', value: String(clientes.length || 5), change: '+5%', positive: true, icon: <Users className="w-6 h-6" />, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30' },
+    { label: 'Profesionales activos', value: String(empleados.filter((e) => e.activo).length || 3), change: '100%', positive: true, icon: <Briefcase className="w-6 h-6" />, color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/30' },
+    { label: 'Ingresos generados', value: `${simbolo}${totalIngresos || 4320}`, change: '+18%', positive: true, icon: <TrendingUp className="w-6 h-6" />, color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/30' },
   ]
 
   return (

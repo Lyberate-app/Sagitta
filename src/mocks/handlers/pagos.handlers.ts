@@ -9,6 +9,7 @@ import {
 } from '@/types'
 
 import { BASE } from '../base'
+import { storageService } from '@/services/storage.service'
 
 // ─── Mock Data ─────────────────────────────────────────────────────────────
 
@@ -231,40 +232,37 @@ export const MOCK_LISTA_ESPERA: ItemListaEspera[] = [
 
 export const pagosHandlers = [
   // Facturas
-  http.get(`${BASE}/facturas`, () =>
-    HttpResponse.json({
+  http.get(`${BASE}/facturas`, () => {
+    const list = storageService.getFacturas()
+    return HttpResponse.json({
       success: true,
       message: 'OK',
-      data: MOCK_FACTURAS,
+      data: list,
     })
-  ),
+  }),
 
   http.get(`${BASE}/facturas/:id`, ({ params }) => {
-    const fac = MOCK_FACTURAS.find((f) => f.id === Number(params.id)) ?? MOCK_FACTURAS[0]
+    const list = storageService.getFacturas()
+    const fac = list.find((f) => f.id === Number(params.id)) ?? list[0]
     return HttpResponse.json({ success: true, message: 'OK', data: fac })
   }),
 
   http.post(`${BASE}/facturas`, async ({ request }) => {
     const body = (await request.json()) as Partial<Factura>
-    const nueva: Factura = {
-      ...MOCK_FACTURAS[0],
-      id: Date.now(),
-      numero: `FAC-2026-${String(MOCK_FACTURAS.length + 1).padStart(3, '0')}`,
-      ...body,
-      created_at: new Date().toISOString(),
-    }
-    MOCK_FACTURAS.unshift(nueva)
+    const nueva = storageService.addFactura(body)
     return HttpResponse.json({ success: true, message: 'Factura generada', data: nueva }, { status: 201 })
   }),
 
   // Cupones
-  http.get(`${BASE}/cupones`, () =>
-    HttpResponse.json({ success: true, message: 'OK', data: MOCK_CUPONES })
-  ),
+  http.get(`${BASE}/cupones`, () => {
+    const list = storageService.getCupones()
+    return HttpResponse.json({ success: true, message: 'OK', data: list })
+  }),
 
   http.post(`${BASE}/cupones/validar`, async ({ request }) => {
     const { codigo, total } = (await request.json()) as { codigo: string; total: number }
-    const cupon = MOCK_CUPONES.find(
+    const list = storageService.getCupones()
+    const cupon = list.find(
       (c) => c.codigo.toUpperCase() === codigo.trim().toUpperCase() && c.activo
     )
 
@@ -295,48 +293,38 @@ export const pagosHandlers = [
 
   http.post(`${BASE}/cupones`, async ({ request }) => {
     const body = (await request.json()) as Partial<Cupon>
-    const nuevo: Cupon = {
-      id: Date.now(),
-      codigo: (body.codigo ?? 'PROMO').toUpperCase(),
-      tipo: body.tipo ?? 'porcentual',
-      valor: body.valor ?? 10,
-      usos_actuales: 0,
-      activo: true,
-      ...body,
-    }
-    MOCK_CUPONES.push(nuevo)
+    const nuevo = storageService.addCupon(body)
     return HttpResponse.json({ success: true, message: 'Cupón creado', data: nuevo }, { status: 201 })
   }),
 
   http.delete(`${BASE}/cupones/:id`, ({ params }) => {
-    const idx = MOCK_CUPONES.findIndex((c) => c.id === Number(params.id))
-    if (idx !== -1) MOCK_CUPONES.splice(idx, 1)
+    const id = Number(params.id)
+    storageService.deleteCupon(id)
     return HttpResponse.json({ success: true, message: 'Cupón eliminado' })
   }),
 
   // Reembolsos
-  http.get(`${BASE}/reembolsos`, () =>
-    HttpResponse.json({ success: true, message: 'OK', data: MOCK_REEMBOLSOS })
-  ),
+  http.get(`${BASE}/reembolsos`, () => {
+    const list = storageService.getReembolsos()
+    return HttpResponse.json({ success: true, message: 'OK', data: list })
+  }),
 
   http.post(`${BASE}/reembolsos`, async ({ request }) => {
     const body = (await request.json()) as { factura_id: number; monto: number; motivo: string }
-    const factura = MOCK_FACTURAS.find((f) => f.id === body.factura_id)
+    const facList = storageService.getFacturas()
+    const factura = facList.find((f) => f.id === body.factura_id)
     if (factura) {
       factura.estado = 'reembolsada'
+      storageService.addFactura(factura)
     }
 
-    const nuevo: Reembolso = {
-      id: Date.now(),
+    const nuevo = storageService.addReembolso({
       factura_id: body.factura_id,
       factura_numero: factura?.numero ?? 'FAC-2026-XXX',
       cliente_nombre: factura?.cliente?.nombre ?? 'Cliente',
       monto: body.monto,
       motivo: body.motivo,
-      estado: 'completado',
-      created_at: new Date().toISOString(),
-    }
-    MOCK_REEMBOLSOS.unshift(nuevo)
+    })
     return HttpResponse.json({ success: true, message: 'Reembolso procesado', data: nuevo }, { status: 201 })
   }),
 

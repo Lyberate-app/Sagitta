@@ -127,6 +127,7 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route path="/configuracion" element={<Navigate to="/ajustes" replace />} />
 
       {/* Fase 6: Escalabilidad, Multi-Tenant y CRM */}
       <Route

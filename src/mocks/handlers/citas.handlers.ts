@@ -1,94 +1,60 @@
 import { http, HttpResponse } from 'msw'
-import {
-  Cita, Cliente, Empleado, Servicio, SlotDisponible
-} from '@/types'
-
+import { Cita, SlotDisponible } from '@/types'
+import { storageService } from '@/services/storage.service'
 import { BASE } from '../base'
 
-// ─── Mock data ─────────────────────────────────────────────────────────────
-
-const MOCK_CLIENTE: Cliente = {
-  id: 1, usuario_id: 1, nombre: 'Ana García', email: 'ana@email.com',
-  telefono: '+1 555-0101', total_citas: 8, created_at: '2026-01-10T00:00:00Z',
-}
-
-const MOCK_EMPLEADO: Empleado = {
-  id: 1, usuario_id: 2, nombre: 'Dr. Carlos Pérez', email: 'carlos@sagitta.com',
-  bio: 'Especialista con 10 años de experiencia.', especialidad: 'Medicina General',
-  activo: true,
-}
-
-const MOCK_SERVICIO: Servicio = {
-  id: 1, nombre: 'Consulta General', duracion_base_min: 30, precio_base: 50,
-  color: '#6366f1', activo: true, buffer_antes_min: 5, buffer_despues_min: 10,
-}
-
 const generarSlots = (): SlotDisponible[] =>
-  ['09:00','09:30','10:00','10:30','11:00','11:30','14:00','14:30','15:00','15:30','16:00'].map(h => ({
-    hora_inicio: h,
-    hora_fin: `${String(parseInt(h) + (h.includes(':30') ? 0 : 0)).padStart(2,'0')}:${h.includes(':30') ? '00' : '30'}`,
-    disponible: Math.random() > 0.3,
-  }))
-
-const MOCK_CITAS: Cita[] = [
-  {
-    id: 1, cliente_id: 1, cliente: MOCK_CLIENTE,
-    empleado_id: 1, empleado: MOCK_EMPLEADO,
-    servicio_id: 1, servicio: MOCK_SERVICIO,
-    fecha_inicio: new Date().toISOString().replace('T', ' ').slice(0, 16),
-    fecha_fin: new Date(Date.now() + 30 * 60000).toISOString().replace('T', ' ').slice(0, 16),
-    estado: 'confirmada', precio_total: 50,
-    notas: 'Primera consulta del paciente', created_at: new Date().toISOString(),
-  },
-  {
-    id: 2, cliente_id: 1, cliente: MOCK_CLIENTE,
-    empleado_id: 1, empleado: MOCK_EMPLEADO,
-    servicio_id: 1, servicio: MOCK_SERVICIO,
-    fecha_inicio: new Date(Date.now() + 86400000).toISOString().replace('T', ' ').slice(0, 16),
-    fecha_fin: new Date(Date.now() + 86400000 + 30 * 60000).toISOString().replace('T', ' ').slice(0, 16),
-    estado: 'pendiente', precio_total: 50, created_at: new Date().toISOString(),
-  },
-  {
-    id: 3, cliente_id: 1, cliente: MOCK_CLIENTE,
-    empleado_id: 1, empleado: MOCK_EMPLEADO,
-    servicio_id: 1, servicio: MOCK_SERVICIO,
-    fecha_inicio: new Date(Date.now() - 86400000).toISOString().replace('T', ' ').slice(0, 16),
-    fecha_fin: new Date(Date.now() - 86400000 + 30 * 60000).toISOString().replace('T', ' ').slice(0, 16),
-    estado: 'completada', precio_total: 50, created_at: new Date().toISOString(),
-  },
-]
-
-// ─── Handlers ──────────────────────────────────────────────────────────────
+  ['09:00', '09:40', '10:30', '11:15', '12:00', '14:30', '15:15', '16:00', '16:45', '17:30', '18:15'].map(
+    (h, idx) => ({
+      hora_inicio: h,
+      hora_fin: `${String(parseInt(h) + 1).padStart(2, '0')}:${h.split(':')[1]}`,
+      disponible: idx % 4 !== 0,
+    })
+  )
 
 export const citasHandlers = [
-  http.get(`${BASE}/citas`, () =>
-    HttpResponse.json({ success: true, message: 'OK', data: MOCK_CITAS,
-      meta: { total: 3, per_page: 20, current_page: 1, last_page: 1 } })
-  ),
-
-  http.get(`${BASE}/citas/:id`, ({ params }) =>
-    HttpResponse.json({ success: true, message: 'OK',
-      data: MOCK_CITAS.find(c => c.id === Number(params.id)) ?? MOCK_CITAS[0] })
-  ),
-
-  http.post(`${BASE}/citas`, async ({ request }) => {
-    const body = await request.json() as Partial<Cita>
-    const nueva: Cita = { ...MOCK_CITAS[0], id: Date.now(), ...body, created_at: new Date().toISOString() }
-    return HttpResponse.json({ success: true, message: 'Cita creada', data: nueva }, { status: 201 })
+  // GET /api/citas
+  http.get(`${BASE}/citas`, () => {
+    const list = storageService.getCitas()
+    return HttpResponse.json({
+      success: true,
+      message: 'OK',
+      data: list,
+      meta: { total: list.length, per_page: 50, current_page: 1, last_page: 1 },
+    })
   }),
 
+  // GET /api/citas/:id
+  http.get(`${BASE}/citas/:id`, ({ params }) => {
+    const list = storageService.getCitas()
+    const cita = list.find((c) => c.id === Number(params.id)) ?? list[0]
+    return HttpResponse.json({ success: true, message: 'OK', data: cita })
+  }),
+
+  // POST /api/citas
+  http.post(`${BASE}/citas`, async ({ request }) => {
+    const body = (await request.json()) as Partial<Cita>
+    const nueva = storageService.addCita(body)
+    return HttpResponse.json({ success: true, message: 'Cita creada con éxito', data: nueva }, { status: 201 })
+  }),
+
+  // PUT /api/citas/:id
   http.put(`${BASE}/citas/:id`, async ({ params, request }) => {
-    const body = await request.json() as Partial<Cita>
-    const actualizada = { ...MOCK_CITAS.find(c => c.id === Number(params.id)), ...body }
+    const id = Number(params.id)
+    const body = (await request.json()) as Partial<Cita>
+    const actualizada = storageService.updateCita(id, body)
     return HttpResponse.json({ success: true, message: 'Cita actualizada', data: actualizada })
   }),
 
-  http.delete(`${BASE}/citas/:id`, () =>
-    HttpResponse.json({ success: true, message: 'Cita cancelada' })
-  ),
+  // DELETE /api/citas/:id
+  http.delete(`${BASE}/citas/:id`, ({ params }) => {
+    const id = Number(params.id)
+    storageService.cancelCita(id)
+    return HttpResponse.json({ success: true, message: 'Cita cancelada correctamente' })
+  }),
 
-  http.get(`${BASE}/citas/disponibilidad`, () =>
-    HttpResponse.json({ success: true, message: 'OK', data: generarSlots() })
-  ),
+  // GET /api/citas/disponibilidad
+  http.get(`${BASE}/citas/disponibilidad`, () => {
+    return HttpResponse.json({ success: true, message: 'OK', data: generarSlots() })
+  }),
 ]
-

@@ -1,5 +1,5 @@
 // ─── Usuarios y Auth ───────────────────────────────────────────────────────
-export type UserRole = 'admin' | 'gerente' | 'empleado' | 'cliente'
+export type UserRole = 'superadmin' | 'admin' | 'gerente' | 'empleado' | 'recepcionista' | 'cliente'
 
 export interface User {
   id: number
@@ -7,8 +7,26 @@ export interface User {
   email: string
   rol: UserRole
   avatar?: string
+  telefono?: string
+  sucursal_id?: number
+  sucursal_nombre?: string
   timezone: string
   created_at: string
+}
+
+export interface UsuarioGestion extends User {
+  activo: boolean
+  ultimo_login?: string
+  password?: string
+}
+
+export interface CrearUsuarioPayload {
+  nombre: string
+  email: string
+  password: string
+  rol: UserRole
+  telefono?: string
+  sucursal_id?: number
 }
 
 export interface AuthTokens {

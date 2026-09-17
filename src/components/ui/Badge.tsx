@@ -1,6 +1,6 @@
 import React from 'react'
 
-type Variant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
+type Variant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'outline'
 type Size = 'sm' | 'md'
 
 interface BadgeProps {
@@ -18,6 +18,7 @@ const variants: Record<Variant, string> = {
   warning: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
   danger:  'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
   info:    'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+  outline: 'border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 bg-transparent',
 }
 
 const sizes: Record<Size, string> = {
@@ -32,6 +33,7 @@ const dotColors: Record<Variant, string> = {
   warning: 'bg-amber-500',
   danger:  'bg-red-500',
   info:    'bg-blue-500',
+  outline: 'bg-slate-400',
 }
 
 export function Badge({

@@ -10,6 +10,7 @@ import {
   Settings,
   Boxes,
   ChevronLeft,
+  UserCog,
 } from 'lucide-react'
 import { useContext } from 'react'
 import { AppContext } from '@/context/AppContext'
@@ -28,6 +29,7 @@ const navItems: NavItem[] = [
   { label: 'Empleados',     to: '/empleados',      icon: <Briefcase       className="w-5 h-5" /> },
   { label: 'Clientes',      to: '/clientes',       icon: <Users           className="w-5 h-5" /> },
   { label: 'Finanzas',      to: '/finanzas',       icon: <Receipt         className="w-5 h-5" /> },
+  { label: 'Usuarios',      to: '/usuarios',       icon: <UserCog         className="w-5 h-5" /> },
   { label: 'Integraciones', to: '/integraciones',  icon: <Share2          className="w-5 h-5" /> },
   { label: 'CRM & API',     to: '/crm',            icon: <Boxes           className="w-5 h-5" /> },
   { label: 'Ajustes',       to: '/ajustes',        icon: <Settings        className="w-5 h-5" /> },

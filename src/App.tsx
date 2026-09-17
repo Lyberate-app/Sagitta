@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/context/AuthContext'
 import { AppProvider } from '@/context/AppContext'
 import { ConfiguracionProvider } from '@/context/ConfiguracionContext'
+import { TenantProvider } from '@/context/TenantContext'
+import { I18nProvider } from '@/context/I18nContext'
 import { PageWrapper } from '@/components/layout'
 import { Loader } from '@/components/ui'
 import { useAuth } from '@/hooks/useAuth'
@@ -15,6 +17,7 @@ import ClientesPage from '@/pages/ClientesPage'
 import PagosPage from '@/pages/PagosPage'
 import IntegracionesPage from '@/pages/IntegracionesPage'
 import ConfiguracionPage from '@/pages/ConfiguracionPage'
+import CrmDesarrolladoresPage from '@/pages/CrmDesarrolladoresPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -114,6 +117,16 @@ function AppRoutes() {
         }
       />
 
+      {/* Fase 6: Escalabilidad, Multi-Tenant y CRM */}
+      <Route
+        path="/crm"
+        element={
+          <PrivateRoute>
+            <CrmDesarrolladoresPage />
+          </PrivateRoute>
+        }
+      />
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
@@ -122,14 +135,18 @@ function AppRoutes() {
 // ─── App raíz ─────────────────────────────────────────────────────────────
 export default function App() {
   return (
-    <ConfiguracionProvider>
-      <AppProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
-        </AuthProvider>
-      </AppProvider>
-    </ConfiguracionProvider>
+    <TenantProvider>
+      <I18nProvider>
+        <ConfiguracionProvider>
+          <AppProvider>
+            <AuthProvider>
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </AuthProvider>
+          </AppProvider>
+        </ConfiguracionProvider>
+      </I18nProvider>
+    </TenantProvider>
   )
 }

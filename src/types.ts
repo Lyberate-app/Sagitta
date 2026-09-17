@@ -462,3 +462,64 @@ export interface ConfiguracionMarcaBlanca {
   updated_at?: string
 }
 
+// ─── Fase 6: Multi-Tenant, i18n, CRM y Escalabilidad ──────────────────────
+export type TenantPlan = 'starter' | 'pro' | 'enterprise'
+
+export interface Tenant {
+  id: string
+  nombre: string
+  slug: string
+  logo_url?: string
+  plan: TenantPlan
+  activo: boolean
+  es_principal: boolean
+  direccion?: string
+  telefono?: string
+  citas_mes: number
+  limite_citas: number
+}
+
+export type Idioma = 'es' | 'en' | 'pt' | 'fr'
+
+export type CrmProvider = 'hubspot' | 'salesforce' | 'pipedrive' | 'zoho'
+
+export interface CrmConfig {
+  id: string
+  proveedor: CrmProvider
+  nombre: string
+  descripcion: string
+  estado: 'conectado' | 'desconectado' | 'error'
+  cuenta_conectada?: string
+  sincronizar_contactos: boolean
+  sincronizar_deals: boolean
+  ultima_sync?: string
+  total_sincronizados: number
+}
+
+export interface ApiKey {
+  id: number
+  nombre: string
+  token: string
+  permisos: 'read' | 'write' | 'admin'
+  creada_en: string
+  ultimo_uso?: string
+  activa: boolean
+}
+
+export type NivelAuditLog = 'info' | 'warning' | 'error'
+
+export interface AuditLog {
+  id: number
+  tenant_id?: string
+  usuario: string
+  email: string
+  rol: string
+  accion: string
+  modulo: string
+  ip: string
+  detalles: string
+  nivel: NivelAuditLog
+  created_at: string
+}
+
+

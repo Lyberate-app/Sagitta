@@ -6,6 +6,11 @@ import { Loader } from '@/components/ui'
 import { useAuth } from '@/hooks/useAuth'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
+import CitasPage from '@/pages/CitasPage'
+import NuevaCitaPage from '@/pages/NuevaCitaPage'
+import ServiciosPage from '@/pages/ServiciosPage'
+import EmpleadosPage from '@/pages/EmpleadosPage'
+import ClientesPage from '@/pages/ClientesPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -22,6 +27,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<LoginPage />} />
+
       <Route
         path="/dashboard"
         element={
@@ -30,31 +36,53 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
-      {/* Fase 2+ */}
+
       <Route
         path="/citas"
         element={
           <PrivateRoute>
-            <div className="card p-8 text-center text-slate-400">Citas — Fase 2</div>
+            <CitasPage />
           </PrivateRoute>
         }
       />
+
       <Route
-        path="/clientes"
+        path="/citas/nueva"
         element={
           <PrivateRoute>
-            <div className="card p-8 text-center text-slate-400">Clientes — Fase 2</div>
+            <NuevaCitaPage />
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/servicios"
+        element={
+          <PrivateRoute>
+            <ServiciosPage />
+          </PrivateRoute>
+        }
+      />
+
       <Route
         path="/empleados"
         element={
           <PrivateRoute>
-            <div className="card p-8 text-center text-slate-400">Empleados — Fase 2</div>
+            <EmpleadosPage />
           </PrivateRoute>
         }
       />
+
+      <Route
+        path="/clientes"
+        element={
+          <PrivateRoute>
+            <ClientesPage />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Fase 5 */}
       <Route
         path="/ajustes"
         element={
@@ -63,14 +91,13 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }
 
 // ─── App raíz ─────────────────────────────────────────────────────────────
-import React from 'react'
-
 export default function App() {
   return (
     <AppProvider>
@@ -82,4 +109,3 @@ export default function App() {
     </AppProvider>
   )
 }
-

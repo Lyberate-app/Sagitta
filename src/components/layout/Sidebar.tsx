@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   CalendarDays,
+  Sparkles,
   Users,
   Briefcase,
   Settings,
@@ -20,12 +21,11 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Dashboard',  to: '/dashboard',  icon: <LayoutDashboard className="w-5 h-5" /> },
   { label: 'Citas',      to: '/citas',       icon: <CalendarDays    className="w-5 h-5" /> },
-  { label: 'Clientes',   to: '/clientes',    icon: <Users           className="w-5 h-5" /> },
+  { label: 'Servicios',  to: '/servicios',   icon: <Sparkles        className="w-5 h-5" /> },
   { label: 'Empleados',  to: '/empleados',   icon: <Briefcase       className="w-5 h-5" /> },
+  { label: 'Clientes',   to: '/clientes',    icon: <Users           className="w-5 h-5" /> },
   { label: 'Ajustes',    to: '/ajustes',     icon: <Settings        className="w-5 h-5" /> },
 ]
-
-import React from 'react'
 
 export function Sidebar() {
   const app = useContext(AppContext)
@@ -51,8 +51,7 @@ export function Sidebar() {
                 isActive
                   ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium'
                   : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100',
-              ].join(' ')
-            }
+              ].join(' ')}
           >
             {item.icon}
             {isOpen && (
@@ -80,4 +79,3 @@ export function Sidebar() {
     </aside>
   )
 }
-

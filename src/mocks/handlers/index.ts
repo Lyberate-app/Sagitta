@@ -1,7 +1,14 @@
-import { authHandlers } from './auth.handlers'
+import { authHandlers }     from './auth.handlers'
+import { citasHandlers }     from './citas.handlers'
+import { serviciosHandlers } from './servicios.handlers'
+import { empleadosHandlers } from './empleados.handlers'
+import { clientesHandlers }  from './clientes.handlers'
 
 export const handlers = [
   ...authHandlers,
-  // Fase 2: citasHandlers, serviciosHandlers, etc.
+  ...citasHandlers,
+  ...serviciosHandlers,
+  ...empleadosHandlers,
+  ...clientesHandlers,
+  // Fase 3: pagosHandlers, cuponesHandlers...
 ]
-

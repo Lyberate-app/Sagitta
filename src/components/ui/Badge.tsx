@@ -1,9 +1,14 @@
+import React from 'react'
+
 type Variant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
+type Size = 'sm' | 'md'
 
 interface BadgeProps {
   children: React.ReactNode
   variant?: Variant
+  size?: Size
   dot?: boolean
+  className?: string
 }
 
 const variants: Record<Variant, string> = {
@@ -15,6 +20,11 @@ const variants: Record<Variant, string> = {
   info:    'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
 }
 
+const sizes: Record<Size, string> = {
+  sm: 'px-2 py-0.5 text-[11px]',
+  md: 'px-2.5 py-0.5 text-xs',
+}
+
 const dotColors: Record<Variant, string> = {
   default: 'bg-slate-400',
   primary: 'bg-primary-500',
@@ -24,14 +34,20 @@ const dotColors: Record<Variant, string> = {
   info:    'bg-blue-500',
 }
 
-import React from 'react'
-
-export function Badge({ children, variant = 'default', dot = false }: BadgeProps) {
+export function Badge({
+  children,
+  variant = 'default',
+  size = 'md',
+  dot = false,
+  className = '',
+}: BadgeProps) {
   return (
     <span
       className={[
-        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium',
+        'inline-flex items-center gap-1.5 rounded-full font-medium',
         variants[variant],
+        sizes[size],
+        className,
       ].join(' ')}
     >
       {dot && <span className={`w-1.5 h-1.5 rounded-full ${dotColors[variant]}`} />}
@@ -39,4 +55,3 @@ export function Badge({ children, variant = 'default', dot = false }: BadgeProps
     </span>
   )
 }
-

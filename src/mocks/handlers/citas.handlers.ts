@@ -3,7 +3,7 @@ import {
   Cita, Cliente, Empleado, Servicio, SlotDisponible
 } from '@/types'
 
-const BASE = import.meta.env.VITE_API_BASE_URL as string
+import { BASE } from '../base'
 
 // ─── Mock data ─────────────────────────────────────────────────────────────
 

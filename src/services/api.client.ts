@@ -43,22 +43,43 @@ async function request<T>(
     }
   }
 
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
-    ...fetchOptions,
-    headers,
-  })
-
-  // Token expirado → limpiar sesión y redirigir
-  if (response.status === 401) {
-    clearTokens()
-    window.location.href = '/login'
-    throw new Error('Sesión expirada. Por favor inicia sesión nuevamente.')
+  let response: Response
+  try {
+    response = await fetch(`${BASE_URL}${endpoint}`, {
+      ...fetchOptions,
+      headers,
+    })
+  } catch (netErr) {
+    throw new Error(
+      netErr instanceof Error
+        ? `No se pudo conectar con el servidor: ${netErr.message}`
+        : 'Error de conexión de red'
+    )
   }
 
-  const data = (await response.json()) as ApiResponse<T>
+  // Token expirado → limpiar sesión y redirigir solo si estábamos en una ruta autenticada privada
+  if (response.status === 401) {
+    if (!skipAuth) {
+      clearTokens()
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login' && window.location.pathname !== '/') {
+        window.location.href = '/login'
+      }
+    }
+    throw new Error('Sesión expirada o credenciales inválidas.')
+  }
+
+  let data: ApiResponse<T>
+  try {
+    data = (await response.json()) as ApiResponse<T>
+  } catch {
+    if (!response.ok) {
+      throw new Error(`Error en el servidor (${response.status} ${response.statusText})`)
+    }
+    data = { success: true, data: {} as T, message: 'OK' }
+  }
 
   if (!response.ok) {
-    throw new Error(data.message ?? 'Error inesperado del servidor')
+    throw new Error(data.message ?? `Error en el servidor (${response.status})`)
   }
 
   return data

@@ -1,0 +1,8 @@
+/mockServiceWorker.js
+  Service-Worker-Allowed: /
+  Cache-Control: no-cache
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+

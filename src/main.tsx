@@ -9,12 +9,17 @@ async function bootstrap() {
   if (enableMocks) {
     try {
       const { worker } = await import('./mocks/browser')
-      await worker.start({
-        onUnhandledRequest: 'bypass', // no lanza error para assets
-      })
+      await Promise.race([
+        worker.start({
+          onUnhandledRequest: 'bypass', // no lanza error para assets
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('MSW timeout (arranque seguro)')), 1200)
+        ),
+      ])
       console.info('[MSW] Mocks activos — API interceptada')
     } catch (err) {
-      console.warn('[MSW] No se pudo iniciar el worker de MSW:', err)
+      console.warn('[MSW] Fallback local activo (worker no iniciado o excedió tiempo):', err)
     }
   }
 

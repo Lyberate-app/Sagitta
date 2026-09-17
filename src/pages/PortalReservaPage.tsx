@@ -207,15 +207,18 @@ export default function PortalReservaPage() {
   const [citaConfirmada, setCitaConfirmada] = useState<Cita | null>(null)
   const [folioReserva, setFolioReserva] = useState<string>('')
 
-  // Fechas próximas para el selector estilo carrusel iOS
+  // Fechas próximas para el selector estilo carrusel iOS (hora local sin desfases UTC)
   const proximosDias = useMemo(() => {
     const lista = []
     const base = new Date()
-    for (let i = 1; i <= 10; i++) {
+    for (let i = 1; i <= 14; i++) {
       const d = new Date(base)
       d.setDate(base.getDate() + i)
+      const y = d.getFullYear()
+      const m = String(d.getMonth() + 1).padStart(2, '0')
+      const dia = String(d.getDate()).padStart(2, '0')
       lista.push({
-        iso: d.toISOString().split('T')[0],
+        iso: `${y}-${m}-${dia}`,
         diaSemana: d.toLocaleDateString('es-ES', { weekday: 'short' }),
         diaNum: d.getDate(),
         mes: d.toLocaleDateString('es-ES', { month: 'short' }),
@@ -296,10 +299,11 @@ export default function PortalReservaPage() {
     return servicios.filter((s) => s.categoria_id === categoriaActiva)
   }, [servicios, categoriaActiva])
 
-  // Abrir la sub-ventana iOS al seleccionar un servicio
-  const handleAbrirSubVentana = (serv: Servicio) => {
-    setServicioSel(serv)
-    const emp = empleados.find((e) => e.activo) ?? empleados[0]
+  // Abrir la sub-ventana iOS al seleccionar un servicio (a prueba de fallos)
+  const handleAbrirSubVentana = (serv?: Servicio) => {
+    const targetServ = serv || servicios[0] || SERVICIOS_SEMILLA_DEFAULT[0]
+    setServicioSel(targetServ)
+    const emp = empleados.find((e) => e.activo) ?? empleados[0] ?? EMPLEADOS_SEMILLA[0]
     setEmpleadoSel(emp)
     setHoraSel('')
     setPasoSubVentana(1)

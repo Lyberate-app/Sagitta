@@ -16,11 +16,18 @@ export default function NotFoundPage() {
             La página que buscas no existe o fue movida.
           </p>
         </div>
-        <Link to="/dashboard">
-          <Button leftIcon={<ArrowLeft className="w-4 h-4" />} size="lg">
-            Volver al Dashboard
-          </Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link to="/">
+            <Button leftIcon={<ArrowLeft className="w-4 h-4" />} size="lg">
+              Volver al Portal de Reservas
+            </Button>
+          </Link>
+          <Link to="/login">
+            <Button variant="outline" size="lg">
+              Acceso al Panel
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   )

@@ -1,5 +1,5 @@
 import { useState, FormEvent } from 'react'
-import { Navigate, Link } from 'react-router-dom'
+import { Navigate, Link, useNavigate } from 'react-router-dom'
 import {
   Mail,
   Lock,
@@ -19,6 +19,7 @@ import { Button, Input, Badge } from '@/components/ui'
 
 export default function LoginPage() {
   const { isAuthenticated, login } = useAuth()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const { configuracion, nombreMarca, lemaMarca } = useConfiguracion()
 
@@ -39,6 +40,7 @@ export default function LoginPage() {
     try {
       await login({ email, password })
       toast.success('¡Bienvenido!', 'Has iniciado sesión correctamente en el panel')
+      navigate('/dashboard', { replace: true })
     } catch (err) {
       toast.error(
         'Error al iniciar sesión',

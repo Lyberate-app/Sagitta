@@ -40,3 +40,4 @@ export const usuariosHandlers = [
     return HttpResponse.json(res)
   }),
 ]
+

@@ -4,10 +4,10 @@ import { usuariosService, USUARIOS_INICIALES } from '@/services/usuarios.service
 
 let currentSessionUser: User = USUARIOS_INICIALES[1] // Admin por defecto
 
-const BASE = import.meta.env.VITE_API_BASE_URL as string
+const BASE = (import.meta.env.VITE_API_BASE_URL as string)?.replace(/\/$/, '') || '/api'
 
 export const authHandlers = [
-  // POST /auth/login
+  // POST /auth/login (coincide con BASE o cualquier prefijo /auth/login)
   http.post(`${BASE}/auth/login`, async ({ request }) => {
     const body = (await request.json()) as { email: string; password: string }
     if (!body.email || !body.password) {

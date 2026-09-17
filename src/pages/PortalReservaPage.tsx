@@ -10,19 +10,18 @@ import {
   Lock,
   ChevronRight,
   ArrowRight,
-  Sparkles,
   Calendar,
   MessageSquare,
   FileText,
-  ShieldCheck,
   Scissors,
   X,
   Compass,
-  Check,
   Star,
-  Layers,
   Sun,
   Moon,
+  Search,
+  CalendarCheck,
+  ShieldCheck,
 } from 'lucide-react'
 import { AppContext } from '@/context/AppContext'
 import { useConfiguracion } from '@/hooks/useConfiguracion'
@@ -41,105 +40,133 @@ import {
   generarUrlWhatsApp,
 } from '@/utils/calendar'
 
-// ─── SERVICIOS DE SEMILLA REALISTAS & PREMIUM (ESTILO APPLE / BOUTIQUE) ───────
-const SERVICIOS_SEMILLA_DEFAULT: Servicio[] = [
+// ─── SERVICIOS REALISTAS, HUMANOS Y CLAROS (ESTILO APP NATIVA IOS / ANDROID) ───
+interface ServicioVisual extends Servicio {
+  popular?: boolean
+  emoji?: string
+  destacado?: string
+}
+
+const SERVICIOS_SEMILLA_DEFAULT: ServicioVisual[] = [
   {
     id: 101,
-    nombre: 'Corte de Autor & Styling Signature',
+    nombre: 'Corte de Cabello & Peinado',
     categoria_id: 1,
-    descripcion:
-      'Diagnóstico visagista personalizado, lavado con masaje capilar shiatsu, corte de precisión y peinado con ceras orgánicas mate.',
-    duracion_base_min: 45,
-    precio_base: 45,
+    descripcion: 'Lavado relajante con champú hidratante, corte a tijera o máquina a tu gusto y peinado final.',
+    duracion_base_min: 40,
+    precio_base: 25,
     activo: true,
     buffer_antes_min: 5,
     buffer_despues_min: 10,
     color: '#6366f1',
+    popular: true,
+    emoji: '✂️',
+    destacado: 'Más pedido',
   },
   {
     id: 102,
-    nombre: 'Ritual de Barba Imperial & Toalla Caliente',
+    nombre: 'Arreglo de Barba & Toalla Caliente',
     categoria_id: 1,
-    descripcion:
-      'Perfilado tradicional a navaja japonesa, exfoliación dérmica, doble toalla caliente aromática con eucalipto y bálsamo hidratante.',
-    duracion_base_min: 35,
-    precio_base: 32,
+    descripcion: 'Perfilado al detalle con navaja, toalla caliente aromatizada y bálsamo hidratante.',
+    duracion_base_min: 30,
+    precio_base: 18,
     activo: true,
     buffer_antes_min: 5,
     buffer_despues_min: 5,
     color: '#3b82f6',
+    popular: true,
+    emoji: '🧔',
+  },
+  {
+    id: 104,
+    nombre: 'Combo Completo: Corte + Barba',
+    categoria_id: 1,
+    descripcion: 'El paquete favorito: corte de cabello completo, lavado, perfilado de barba y toalla caliente.',
+    duracion_base_min: 60,
+    precio_base: 38,
+    activo: true,
+    buffer_antes_min: 5,
+    buffer_despues_min: 10,
+    color: '#4f46e5',
+    popular: true,
+    emoji: '💈',
+    destacado: 'Ahorra $5',
   },
   {
     id: 103,
-    nombre: 'Coloración Premium & Balayage Iluminador',
+    nombre: 'Color, Mechas o Balayage',
     categoria_id: 1,
-    descripcion:
-      'Degradado de luz natural sin efecto raíz, nutrición molecular profunda, matizado libre de amoníaco y sellado de brillo cristalino.',
+    descripcion: 'Tinte completo o mechas luminosas con mascarilla de nutrición profunda para cuidar tu pelo.',
     duracion_base_min: 90,
-    precio_base: 115,
+    precio_base: 65,
     activo: true,
     buffer_antes_min: 10,
     buffer_despues_min: 15,
     color: '#8b5cf6',
+    emoji: '🎨',
   },
   {
     id: 201,
-    nombre: 'Limpieza Facial Profunda con Hidrodermoabrasión',
+    nombre: 'Limpieza Facial Profunda',
     categoria_id: 2,
-    descripcion:
-      'Extracción suave por succión espiral, peeling enzimático botánico, terapia de luz LED y velo de ácido hialurónico reticulado.',
-    duracion_base_min: 60,
-    precio_base: 78,
+    descripcion: 'Extracción suave de impurezas, exfoliación dérmica, mascarilla calmante y masaje facial.',
+    duracion_base_min: 50,
+    precio_base: 45,
     activo: true,
     buffer_antes_min: 10,
     buffer_despues_min: 10,
     color: '#ec4899',
+    popular: true,
+    emoji: '🧖‍♀️',
+    destacado: 'Piel fresca',
   },
   {
     id: 202,
-    nombre: 'Lifting de Pestañas & Laminado de Cejas HD',
+    nombre: 'Lifting de Pestañas & Cejas',
     categoria_id: 2,
-    descripcion:
-      'Diseño geométrico de mirada, nutrición con keratina y botox de argán, elevación de raíz y tinte orgánico de larga duración.',
-    duracion_base_min: 50,
-    precio_base: 55,
+    descripcion: 'Curvatura natural de pestañas con tinte y perfilado de cejas para resaltar tu mirada.',
+    duracion_base_min: 45,
+    precio_base: 35,
     activo: true,
     buffer_antes_min: 5,
     buffer_despues_min: 5,
     color: '#f43f5e',
+    emoji: '👁️',
   },
   {
     id: 301,
-    nombre: 'Masaje Descontracturante & Piedras Calientes',
+    nombre: 'Masaje Relajante & Descontracturante',
     categoria_id: 3,
-    descripcion:
-      'Terapia focalizada para descargar tensiones cervicales y lumbares con rocas volcánicas de basalto y aceites esenciales tibios.',
-    duracion_base_min: 60,
-    precio_base: 85,
+    descripcion: 'Descarga tensiones de espalda, cuello y hombros con aceites naturales tibios y aromaterapia.',
+    duracion_base_min: 50,
+    precio_base: 45,
     activo: true,
     buffer_antes_min: 10,
     buffer_despues_min: 15,
     color: '#10b981',
+    popular: true,
+    emoji: '💆‍♂️',
+    destacado: 'Alivio total',
   },
   {
     id: 302,
-    nombre: 'Ritual Antiestrés Sensorial Completo',
+    nombre: 'Sesión Spa Antiestrés Completa',
     categoria_id: 3,
-    descripcion:
-      'Experiencia inmersiva con masaje craneofacial neuro-sedante, reflexología podal y presoterapia circulatoria para alivio total.',
+    descripcion: 'Experiencia integral de masaje corporal, reflexología en pies y desconexión absoluta.',
     duracion_base_min: 75,
-    precio_base: 98,
+    precio_base: 60,
     activo: true,
     buffer_antes_min: 10,
     buffer_despues_min: 10,
     color: '#14b8a6',
+    emoji: '🌿',
   },
 ]
 
-const CATEGORIAS_SEMILLA: CategoriaServicio[] = [
-  { id: 1, nombre: 'Peluquería & Barba', color: '#6366f1' },
-  { id: 2, nombre: 'Estética & Facial', color: '#ec4899' },
-  { id: 3, nombre: 'Bienestar & Spa', color: '#10b981' },
+const CATEGORIAS_SEMILLA = [
+  { id: 1, nombre: 'Cortes & Barba', emoji: '✂️', color: '#6366f1' },
+  { id: 2, nombre: 'Facial & Mirada', emoji: '🧖‍♀️', color: '#ec4899' },
+  { id: 3, nombre: 'Masajes & Spa', emoji: '💆', color: '#10b981' },
 ]
 
 const EMPLEADOS_SEMILLA: Empleado[] = [
@@ -148,7 +175,7 @@ const EMPLEADOS_SEMILLA: Empleado[] = [
     usuario_id: 2,
     nombre: 'Valentina Rosales',
     email: 'valentina@sagitta.com',
-    especialidad: 'Master Stylist & Colorista',
+    especialidad: 'Estilista & Color',
     activo: true,
   },
   {
@@ -156,7 +183,7 @@ const EMPLEADOS_SEMILLA: Empleado[] = [
     usuario_id: 3,
     nombre: 'Mateo Calderón',
     email: 'mateo@sagitta.com',
-    especialidad: 'Barbero & Visagista Masculino',
+    especialidad: 'Barbería Masculina',
     activo: true,
   },
   {
@@ -164,7 +191,7 @@ const EMPLEADOS_SEMILLA: Empleado[] = [
     usuario_id: 4,
     nombre: 'Camila Silva',
     email: 'camila@sagitta.com',
-    especialidad: 'Cosmetóloga & Terapeuta Spa',
+    especialidad: 'Facial & Masajes',
     activo: true,
   },
 ]
@@ -182,9 +209,12 @@ export default function PortalReservaPage() {
   const [categorias, setCategorias] = useState<CategoriaServicio[]>(CATEGORIAS_SEMILLA)
   const [empleados, setEmpleados] = useState<Empleado[]>(EMPLEADOS_SEMILLA)
   const [cargando, setCargando] = useState(true)
-  const [categoriaActiva, setCategoriaActiva] = useState<number | 'todas'>('todas')
 
-  // Estado de la Sub-Ventana Desplegable (iOS Sheet Modal)
+  // Filtros
+  const [categoriaActiva, setCategoriaActiva] = useState<number | 'todas'>('todas')
+  const [busqueda, setBusqueda] = useState('')
+
+  // Sub-Ventana Desplegable (iOS Bottom Sheet)
   const [subVentanaAbierta, setSubVentanaAbierta] = useState(false)
   const [servicioSel, setServicioSel] = useState<Servicio | null>(null)
   const [empleadoSel, setEmpleadoSel] = useState<Empleado | null>(null)
@@ -192,11 +222,11 @@ export default function PortalReservaPage() {
   const [horaSel, setHoraSel] = useState<string>('')
   const [pasoSubVentana, setPasoSubVentana] = useState<1 | 2 | 3>(1) // 1: Horario, 2: Datos, 3: Confirmada
 
-  // Slots
+  // Horarios / Slots
   const [slots, setSlots] = useState<SlotDisponible[]>([])
   const [cargandoSlots, setCargandoSlots] = useState(false)
 
-  // Datos de contacto (sin registro)
+  // Datos del cliente
   const [nombreCliente, setNombreCliente] = useState('')
   const [telefonoCliente, setTelefonoCliente] = useState('')
   const [emailCliente, setEmailCliente] = useState('')
@@ -207,7 +237,7 @@ export default function PortalReservaPage() {
   const [citaConfirmada, setCitaConfirmada] = useState<Cita | null>(null)
   const [folioReserva, setFolioReserva] = useState<string>('')
 
-  // Fechas próximas para el selector estilo carrusel iOS (hora local sin desfases UTC)
+  // Días próximos en hora local
   const proximosDias = useMemo(() => {
     const lista = []
     const base = new Date()
@@ -217,9 +247,11 @@ export default function PortalReservaPage() {
       const y = d.getFullYear()
       const m = String(d.getMonth() + 1).padStart(2, '0')
       const dia = String(d.getDate()).padStart(2, '0')
+      const nombreDia = d.toLocaleDateString('es-ES', { weekday: 'short' })
+      const etiquetaDia = i === 1 ? 'Mañ' : nombreDia
       lista.push({
         iso: `${y}-${m}-${dia}`,
-        diaSemana: d.toLocaleDateString('es-ES', { weekday: 'short' }),
+        diaSemana: etiquetaDia,
         diaNum: d.getDate(),
         mes: d.toLocaleDateString('es-ES', { month: 'short' }),
       })
@@ -227,7 +259,7 @@ export default function PortalReservaPage() {
     return lista
   }, [])
 
-  // Cargar catálogos
+  // Carga inicial de datos
   useEffect(() => {
     async function init() {
       try {
@@ -247,7 +279,7 @@ export default function PortalReservaPage() {
           setEmpleados(resEmp.value.data)
         }
       } catch (err) {
-        console.warn('Usando catálogo de semilla local:', err)
+        console.warn('Usando catálogo de respaldo local:', err)
       } finally {
         setCargando(false)
         if (proximosDias.length > 0) {
@@ -260,25 +292,25 @@ export default function PortalReservaPage() {
 
   // Cargar slots al cambiar fecha o empleado
   useEffect(() => {
-    if (!subVentanaAbierta || !empleadoSel || !fechaSel) return
+    if (!subVentanaAbierta || !fechaSel) return
     setCargandoSlots(true)
 
+    const empId = empleadoSel?.id || 1
     citasService
-      .getDisponibilidad(empleadoSel.id, fechaSel, servicioSel?.id)
+      .getDisponibilidad(empId, fechaSel, servicioSel?.id)
       .then((res) => {
         if (res.data?.length) {
           setSlots(res.data)
         } else {
-          // Fallback slots iOS realistas
           setSlots([
-            { hora_inicio: '09:30', hora_fin: '10:15', disponible: true },
-            { hora_inicio: '10:30', hora_fin: '11:15', disponible: true },
-            { hora_inicio: '11:30', hora_fin: '12:15', disponible: false },
-            { hora_inicio: '13:00', hora_fin: '13:45', disponible: true },
-            { hora_inicio: '15:00', hora_fin: '15:45', disponible: true },
-            { hora_inicio: '16:30', hora_fin: '17:15', disponible: true },
-            { hora_inicio: '17:30', hora_fin: '18:15', disponible: true },
-            { hora_inicio: '18:30', hora_fin: '19:15', disponible: false },
+            { hora_inicio: '09:00', hora_fin: '09:40', disponible: true },
+            { hora_inicio: '10:00', hora_fin: '10:40', disponible: true },
+            { hora_inicio: '11:00', hora_fin: '11:40', disponible: false },
+            { hora_inicio: '12:00', hora_fin: '12:40', disponible: true },
+            { hora_inicio: '15:00', hora_fin: '15:40', disponible: true },
+            { hora_inicio: '16:00', hora_fin: '16:40', disponible: true },
+            { hora_inicio: '17:00', hora_fin: '17:40', disponible: false },
+            { hora_inicio: '18:00', hora_fin: '18:40', disponible: true },
           ])
         }
       })
@@ -288,6 +320,7 @@ export default function PortalReservaPage() {
           { hora_inicio: '10:30', hora_fin: '11:15', disponible: true },
           { hora_inicio: '15:00', hora_fin: '15:45', disponible: true },
           { hora_inicio: '16:30', hora_fin: '17:15', disponible: true },
+          { hora_inicio: '17:30', hora_fin: '18:15', disponible: true },
         ])
       })
       .finally(() => setCargandoSlots(false))
@@ -295,16 +328,21 @@ export default function PortalReservaPage() {
 
   // Filtrado de servicios
   const serviciosFiltrados = useMemo(() => {
-    if (categoriaActiva === 'todas') return servicios
-    return servicios.filter((s) => s.categoria_id === categoriaActiva)
-  }, [servicios, categoriaActiva])
+    return servicios.filter((s) => {
+      const matchCat = categoriaActiva === 'todas' || s.categoria_id === categoriaActiva
+      const matchBusqueda =
+        !busqueda.trim() ||
+        s.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
+        (s.descripcion ?? '').toLowerCase().includes(busqueda.toLowerCase())
+      return matchCat && matchBusqueda
+    })
+  }, [servicios, categoriaActiva, busqueda])
 
-  // Abrir la sub-ventana iOS al seleccionar un servicio (a prueba de fallos)
+  // Abrir sub-ventana modal estilo iOS
   const handleAbrirSubVentana = (serv?: Servicio) => {
-    const targetServ = serv || servicios[0] || SERVICIOS_SEMILLA_DEFAULT[0]
-    setServicioSel(targetServ)
-    const emp = empleados.find((e) => e.activo) ?? empleados[0] ?? EMPLEADOS_SEMILLA[0]
-    setEmpleadoSel(emp)
+    const target = serv || servicios[0] || SERVICIOS_SEMILLA_DEFAULT[0]
+    setServicioSel(target)
+    setEmpleadoSel(null) // null significa "Cualquiera disponible"
     setHoraSel('')
     setPasoSubVentana(1)
     setSubVentanaAbierta(true)
@@ -313,18 +351,21 @@ export default function PortalReservaPage() {
   // Confirmar cita
   const handleConfirmarCita = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!servicioSel || !empleadoSel || !fechaSel || !horaSel) {
-      toast.warning('Horario pendiente', 'Por favor selecciona un horario libre')
+    if (!servicioSel || !fechaSel || !horaSel) {
+      toast.warning('Horario pendiente', 'Por favor selecciona la hora de tu cita')
       return
     }
-    if (!nombreCliente.trim() || !telefonoCliente.trim() || !emailCliente.trim()) {
-      toast.warning('Datos incompletos', 'Completa tu nombre, teléfono y correo')
+    if (!nombreCliente.trim() || !telefonoCliente.trim()) {
+      toast.warning('Datos incompletos', 'Ingresa al menos tu nombre y teléfono para avisarte')
       return
     }
 
+    const empAsignado =
+      empleadoSel || empleados.find((e) => e.activo) || EMPLEADOS_SEMILLA[0]
+
     setGuardandoCita(true)
     try {
-      const durMin = servicioSel.duracion_base_min || 45
+      const durMin = servicioSel.duracion_base_min || 40
       const fechaInicio = `${fechaSel} ${horaSel}:00`
       const [h, m] = horaSel.split(':').map(Number)
       const totalMin = h * 60 + m + durMin
@@ -332,13 +373,12 @@ export default function PortalReservaPage() {
       const mFin = String(totalMin % 60).padStart(2, '0')
       const fechaFin = `${fechaSel} ${hFin}:${mFin}:00`
 
-      // Guardar cliente
       let clienteId = Date.now()
       try {
         const resCli = await clientesService.create({
           nombre: nombreCliente.trim(),
           telefono: telefonoCliente.trim(),
-          email: emailCliente.trim().toLowerCase(),
+          email: emailCliente.trim().toLowerCase() || `${telefonoCliente.replace(/\D/g, '')}@cliente.local`,
           notas: notasCliente,
         })
         if (resCli.data?.id) clienteId = resCli.data.id
@@ -346,12 +386,11 @@ export default function PortalReservaPage() {
         // Fallback local
       }
 
-      // Guardar cita
       let citaFinal: Cita
       try {
         const resCita = await citasService.create({
           cliente_id: clienteId,
-          empleado_id: empleadoSel.id,
+          empleado_id: empAsignado.id,
           servicio_id: servicioSel.id,
           fecha_inicio: fechaInicio,
           fecha_fin: fechaFin,
@@ -363,14 +402,14 @@ export default function PortalReservaPage() {
         citaFinal = resCita.data ?? {
           id: Date.now(),
           cliente_id: clienteId,
-          empleado_id: empleadoSel.id,
+          empleado_id: empAsignado.id,
           servicio_id: servicioSel.id,
           fecha_inicio: fechaInicio,
           fecha_fin: fechaFin,
           precio_total: servicioSel.precio_base,
           estado: 'confirmada',
           servicio: servicioSel,
-          empleado: empleadoSel,
+          empleado: empAsignado,
           cliente: {
             id: clienteId,
             nombre: nombreCliente,
@@ -385,14 +424,14 @@ export default function PortalReservaPage() {
         citaFinal = {
           id: Date.now(),
           cliente_id: clienteId,
-          empleado_id: empleadoSel.id,
+          empleado_id: empAsignado.id,
           servicio_id: servicioSel.id,
           fecha_inicio: fechaInicio,
           fecha_fin: fechaFin,
           precio_total: servicioSel.precio_base,
           estado: 'confirmada',
           servicio: servicioSel,
-          empleado: empleadoSel,
+          empleado: empAsignado,
           cliente: {
             id: clienteId,
             nombre: nombreCliente,
@@ -409,7 +448,7 @@ export default function PortalReservaPage() {
       setFolioReserva(folio)
       setCitaConfirmada(citaFinal)
       setPasoSubVentana(3)
-      toast.success('¡Cita Confirmada!', 'Tu reserva está lista.')
+      toast.success('¡Turno apartado con éxito!', 'Te esperamos en el salón.')
     } catch (err) {
       toast.error('Error', err instanceof Error ? err.message : 'No se pudo agendar')
     } finally {
@@ -417,7 +456,7 @@ export default function PortalReservaPage() {
     }
   }
 
-  // Cerrar y limpiar sub-ventana
+  // Cerrar sub-ventana
   const handleCerrarSubVentana = () => {
     setSubVentanaAbierta(false)
     if (pasoSubVentana === 3) {
@@ -434,254 +473,325 @@ export default function PortalReservaPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0C10] text-slate-900 dark:text-slate-100 font-sans selection:bg-black selection:text-white pb-28 overflow-x-hidden">
-      {/* ─── 1. NAVBAR ESTILO APPLE (FROSTED GLASS & MINIMALIST) ─────────── */}
-      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/80 dark:bg-[#0A0C10]/80 border-b border-black/[0.05] dark:border-white/[0.08] transition-all">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
-          {/* Logo y Marca */}
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+    <div className="min-h-screen flex flex-col bg-[#F8F9FC] dark:bg-[#090B10] text-slate-900 dark:text-slate-100 font-sans selection:bg-indigo-600 selection:text-white pb-28 overflow-x-hidden">
+      {/* ─── 1. CABECERA NATIVA ESTILO APP (IOS / ANDROID APP BAR) ────────── */}
+      <header className="sticky top-0 z-30 backdrop-blur-xl bg-white/90 dark:bg-[#0D1117]/90 border-b border-slate-200/80 dark:border-slate-800 transition-all">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          {/* Avatar del Negocio / Salón */}
+          <div className="flex items-center gap-3 min-w-0">
             {configuracion.logo_url ? (
               <img
                 src={configuracion.logo_url}
                 alt={nombreMarca}
-                className="h-7 sm:h-8 max-w-[110px] sm:max-w-[140px] object-contain shrink-0"
+                className="w-10 h-10 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-sm shrink-0"
               />
             ) : (
-              <div className="w-8 h-8 rounded-2xl bg-slate-950 dark:bg-white text-white dark:text-slate-950 flex items-center justify-center font-bold shadow-sm shrink-0">
-                <Scissors className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-md shrink-0">
+                <Scissors className="w-5 h-5" />
               </div>
             )}
-            <div className="leading-none min-w-0">
-              <span className="font-semibold text-sm sm:text-base tracking-tight block text-slate-900 dark:text-white truncate">
-                {nombreMarca}
-              </span>
-              {lemaMarca && (
-                <span className="text-[10px] sm:text-[11px] text-slate-400 font-normal hidden md:inline truncate">
-                  {lemaMarca}
+            <div className="leading-tight min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white truncate">
+                  {nombreMarca}
                 </span>
-              )}
+                <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-blue-500 text-white text-[10px] font-black shrink-0">
+                  ✓
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                {lemaMarca || 'Peluquería, Estética & Bienestar'}
+              </p>
             </div>
           </div>
 
-          {/* Enlaces y Acciones */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Acciones Rápidas */}
+          <div className="flex items-center gap-2 shrink-0">
             <div className="hidden sm:block">
               <TenantSelector />
             </div>
             <I18nSelector />
 
-            {/* Alternar fondo blanco / oscuro */}
+            {/* Alternador de Modo Claro / Oscuro */}
             <button
               type="button"
               onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Alternar fondo blanco y oscuro"
-              title={app?.theme === 'dark' ? 'Cambiar a fondo blanco' : 'Cambiar a fondo oscuro'}
+              className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shadow-xs"
+              aria-label="Alternar tema claro y oscuro"
+              title={app?.theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
               {app?.theme === 'dark' ? (
                 <Sun className="w-4 h-4 text-amber-400" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-600" />
+                <Moon className="w-4 h-4" />
               )}
             </button>
-
-            {configuracion.telefono_soporte && (
-              <a
-                href={`tel:${configuracion.telefono_soporte}`}
-                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 transition-colors"
-              >
-                <Phone className="w-3 h-3" />
-                <span>{configuracion.telefono_soporte}</span>
-              </a>
-            )}
           </div>
         </div>
       </header>
 
-      {/* ─── 2. HERO PRINCIPAL LIMPIO (INSPIRACIÓN APPLE STUDIO) ───────────── */}
-      <section className="relative px-4 sm:px-6 pt-10 sm:pt-14 pb-8 sm:pb-12 max-w-4xl mx-auto text-center space-y-4 sm:space-y-5">
-        <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.06] dark:border-white/[0.08] text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-300">
-          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
-          <span>Experiencia Premium • Agendación Inmediata</span>
-        </div>
+      {/* ─── 2. TARJETA DE BIENVENIDA HUMANA (ESTILO UBER / FRESHA) ───────── */}
+      <section className="max-w-4xl mx-auto w-full px-4 sm:px-6 pt-5 pb-3">
+        <div className="bg-white dark:bg-slate-900/90 rounded-3xl p-4 sm:p-6 border border-slate-200/80 dark:border-slate-800/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] space-y-3">
+          {/* Status del Local */}
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-200/60 dark:border-emerald-800/60">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Abierto hoy • 09:00 - 19:00</span>
+            </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-slate-950 dark:text-white leading-[1.12]">
-          Tu momento de cuidado,{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-700 to-slate-500 dark:from-white dark:via-slate-200 dark:to-slate-400">
-            reservado en segundos.
-          </span>
-        </h1>
+            <div className="inline-flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
+              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+              <span className="font-bold text-slate-800 dark:text-slate-200">4.9</span>
+              <span>(184 clientes felices)</span>
+            </div>
+          </div>
 
-        <p className="text-sm sm:text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto font-normal leading-relaxed">
-          {lemaMarca ||
-            'Explora nuestros servicios exclusivos, escoge a tu profesional favorito y agenda tu cita sin necesidad de registros.'}
-        </p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            ¡Hola! 👋 Aparta tu turno en segundos
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+            Sin registros previos ni contraseñas. Elige lo que necesitas y pagas directamente cuando vengas al local.
+          </p>
 
-        {/* Badges de Confianza iOS */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-2 text-[11px] sm:text-xs font-medium text-slate-600 dark:text-slate-400">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            Sin registros previos
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            Pago directo en el salón
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm">
-            <Clock className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            Confirmación en vivo
-          </span>
+          {/* Barra de búsqueda interactiva instantánea */}
+          <div className="relative pt-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar servicio (ej. corte, barba, facial, masaje...)"
+              className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+            />
+            {busqueda && (
+              <button
+                type="button"
+                onClick={() => setBusqueda('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
       </section>
 
-      {/* ─── 3. SELECTOR DE CATEGORÍAS TIPO SEGMENTED CONTROL DE IOS ──────── */}
-      <section id="servicios" className="max-w-5xl mx-auto px-3 sm:px-6 w-full mb-6 sm:mb-8">
-        <div className="flex justify-center">
-          <div className="inline-flex p-1 rounded-2xl bg-slate-200/60 dark:bg-slate-800/60 backdrop-blur-lg border border-black/[0.04] dark:border-white/[0.04] overflow-x-auto max-w-full scrollbar-none touch-pan-x">
-            <button
-              type="button"
-              onClick={() => setCategoriaActiva('todas')}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
-                categoriaActiva === 'todas'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              Todos ({servicios.length})
-            </button>
-            {categorias.map((cat) => (
+      {/* ─── 3. CATEGORÍAS EN BURBUJAS NATIVAS (ESTILO APP STORE / INSTAGRAM) ── */}
+      <section id="servicios" className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-3">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none touch-pan-x">
+          <button
+            type="button"
+            onClick={() => setCategoriaActiva('todas')}
+            className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 active:scale-95 shadow-xs ${
+              categoriaActiva === 'todas'
+                ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-md ring-2 ring-slate-900/10'
+                : 'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+            }`}
+          >
+            <span>✨</span>
+            <span>Todos los servicios</span>
+            <span className="text-[11px] opacity-75 font-normal">({servicios.length})</span>
+          </button>
+
+          {categorias.map((cat) => {
+            const esActiva = categoriaActiva === cat.id
+            const emojiCat =
+              cat.id === 1 ? '✂️' : cat.id === 2 ? '🧖‍♀️' : '💆'
+            return (
               <button
                 key={cat.id}
                 type="button"
                 onClick={() => setCategoriaActiva(cat.id)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
-                  categoriaActiva === cat.id
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shrink-0 flex items-center gap-1.5 active:scale-95 shadow-xs ${
+                  esActiva
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-md ring-2 ring-slate-900/10'
+                    : 'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50'
                 }`}
               >
-                {cat.nombre}
+                <span>{emojiCat}</span>
+                <span>{cat.nombre}</span>
               </button>
-            ))}
-          </div>
+            )
+          })}
         </div>
       </section>
 
-      {/* ─── 4. CATÁLOGO DE SERVICIOS EN TARJETAS ESTILO APPLE ───────────── */}
-      <section className="max-w-5xl mx-auto px-3 sm:px-6 w-full space-y-4">
+      {/* ─── 4. LISTA DE SERVICIOS EN TARJETAS DE APP MÓVIL (ESTILO FRESHA / UBER) ─ */}
+      <section className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-2 space-y-3">
         {cargando ? (
           <div className="py-16 flex justify-center">
-            <Loader text="Cargando menú de servicios..." />
+            <Loader text="Cargando catálogo..." />
+          </div>
+        ) : serviciosFiltrados.length === 0 ? (
+          <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-2">
+            <Search className="w-8 h-8 text-slate-400 mx-auto" />
+            <p className="font-bold text-slate-800 dark:text-slate-200">No encontramos ese servicio</p>
+            <p className="text-xs text-slate-500">Prueba buscando otra palabra como corte, barba o masaje</p>
+            <button
+              type="button"
+              onClick={() => {
+                setBusqueda('')
+                setCategoriaActiva('todas')
+              }}
+              className="text-xs text-indigo-600 font-bold underline pt-2"
+            >
+              Ver todos los servicios
+            </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
-            {serviciosFiltrados.map((serv) => (
-              <div
-                key={serv.id}
-                onClick={() => handleAbrirSubVentana(serv)}
-                className="group relative cursor-pointer bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-black/[0.06] dark:border-white/[0.08] rounded-[20px] sm:rounded-[24px] p-4 sm:p-6 shadow-[0_4px_24px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 flex flex-col justify-between"
-              >
-                <div className="space-y-2.5 sm:space-y-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-base sm:text-lg font-semibold tracking-tight text-slate-950 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                      {serv.nombre}
-                    </h3>
-                    <div className="text-right shrink-0">
-                      <span className="text-base sm:text-lg font-bold text-slate-950 dark:text-white">
-                        {formatearMoneda(serv.precio_base)}
-                      </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {serviciosFiltrados.map((serv) => {
+              const servVis = serv as ServicioVisual
+              return (
+                <div
+                  key={serv.id}
+                  onClick={() => handleAbrirSubVentana(serv)}
+                  className="group cursor-pointer bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-[0_2px_12px_rgba(0,0,0,0.02)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-slate-300 dark:hover:border-slate-700 active:scale-[0.99] transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    {/* Fila Superior: Título y Precio */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-base text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            {serv.nombre}
+                          </h3>
+                          {servVis.destacado && (
+                            <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 text-[10px] font-extrabold shrink-0">
+                              {servVis.destacado}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                          {serv.descripcion}
+                        </p>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <span className="text-lg font-black text-slate-900 dark:text-white">
+                          {formatearMoneda(serv.precio_base)}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
-                    {serv.descripcion}
-                  </p>
-                </div>
+                  {/* Fila Inferior: Duración y Botón Reservar */}
+                  <div className="pt-3.5 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <span>{serv.duracion_base_min} min</span>
+                    </div>
 
-                <div className="pt-4 sm:pt-5 mt-3 border-t border-black/[0.04] dark:border-white/[0.06] flex items-center justify-between text-xs">
-                  <div className="inline-flex items-center gap-1.5 text-slate-500 dark:text-slate-400 font-medium">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{serv.duracion_base_min} min</span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleAbrirSubVentana(serv)
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm active:scale-95 transition-all"
+                    >
+                      <span>Reservar</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-
-                  <span className="inline-flex items-center gap-1 font-semibold text-slate-900 dark:text-white group-hover:translate-x-0.5 transition-transform">
-                    <span>Elegir horario</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                  </span>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </section>
 
-      {/* ─── 5. SUB-VENTANA DESPLEGABLE ESTILO IOS (IOS BOTTOM SHEET MODAL) ─ */}
+      {/* ─── 5. SUB-VENTANA DE RESERVA ESTILO IOS (IOS BOTTOM SHEET) ──────── */}
       {subVentanaAbierta && servicioSel && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-          {/* Fondo desenfocado estilo Apple */}
+          {/* Fondo desenfocado */}
           <div
-            className="absolute inset-0 bg-black/40 backdrop-blur-md transition-opacity"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={handleCerrarSubVentana}
           />
 
-          {/* Contenedor de la Sub-Ventana */}
-          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-t-[28px] sm:rounded-[32px] border border-black/[0.08] dark:border-white/[0.12] shadow-2xl overflow-hidden max-h-[92vh] sm:max-h-[88vh] flex flex-col z-10">
-            {/* Tirador superior tipo iPhone (Grab Handle) */}
-            <div className="pt-3 pb-1 flex justify-center">
-              <div className="w-10 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full" />
+          {/* Contenedor Bottom Sheet */}
+          <div className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-[32px] sm:rounded-[32px] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden max-h-[92vh] flex flex-col z-10 animate-in slide-in-from-bottom duration-300">
+            {/* Grab Handle tipo iPhone */}
+            <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={handleCerrarSubVentana}>
+              <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-700 rounded-full" />
             </div>
 
-            {/* Cabecera de la Sub-Ventana */}
-            <div className="px-4 sm:px-6 py-3 border-b border-black/[0.05] dark:border-white/[0.08] flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block truncate">
+            {/* Cabecera del Sheet */}
+            <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
                   {pasoSubVentana === 1
-                    ? '1. Horario y Especialista'
+                    ? 'Paso 1: Elige Fecha y Hora'
                     : pasoSubVentana === 2
-                    ? '2. Datos de Contacto'
-                    : '3. Reserva Exitosa'}
+                    ? 'Paso 2: ¿A nombre de quién?'
+                    : '¡Turno Apartado!'}
                 </span>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white truncate max-w-[240px] sm:max-w-[340px]">
-                  {servicioSel.nombre}
-                </h3>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white truncate max-w-[280px]">
+                  {servicioSel.nombre} • {formatearMoneda(servicioSel.precio_base)}
+                </h2>
               </div>
 
               <button
                 type="button"
                 onClick={handleCerrarSubVentana}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors shrink-0"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+                aria-label="Cerrar ventana"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Contenido scrolleable de la Sub-Ventana */}
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 overscroll-contain">
+            {/* Contenido scrolleable */}
+            <div className="p-5 overflow-y-auto space-y-5 overscroll-contain">
               {/* PASO 1: HORARIO Y ESPECIALISTA */}
               {pasoSubVentana === 1 && (
-                <div className="space-y-5 sm:space-y-6">
-                  {/* Especialista */}
+                <div className="space-y-5">
+                  {/* 1. Selección de especialista */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">
-                      ¿Con quién te gustaría atenderte?
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      ¿Con quién prefieres atenderte?
                     </label>
-                    <div className="flex sm:grid sm:grid-cols-3 gap-2 overflow-x-auto pb-1 scrollbar-none snap-x touch-pan-x">
+                    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none touch-pan-x">
+                      {/* Opción 1: Cualquiera disponible */}
+                      <button
+                        type="button"
+                        onClick={() => setEmpleadoSel(null)}
+                        className={`p-3 rounded-2xl border text-left transition-all min-w-[140px] shrink-0 active:scale-95 ${
+                          empleadoSel === null
+                            ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/40 ring-2 ring-indigo-500/20 shadow-sm'
+                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold text-xs flex items-center justify-center mb-1.5">
+                          ⚡
+                        </div>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                          Cualquiera libre
+                        </p>
+                        <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold truncate">
+                          El más rápido
+                        </p>
+                      </button>
+
+                      {/* Especialistas */}
                       {empleados.map((emp) => (
                         <button
                           key={emp.id}
                           type="button"
                           onClick={() => setEmpleadoSel(emp)}
-                          className={`p-3 rounded-2xl border text-left transition-all min-w-[130px] sm:min-w-0 shrink-0 sm:shrink snap-start ${
+                          className={`p-3 rounded-2xl border text-left transition-all min-w-[140px] shrink-0 active:scale-95 ${
                             empleadoSel?.id === emp.id
-                              ? 'border-slate-900 dark:border-white bg-slate-50 dark:bg-slate-800/80 ring-1 ring-slate-900 dark:ring-white'
+                              ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/40 ring-2 ring-indigo-500/20 shadow-sm'
                               : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
                           }`}
                         >
-                          <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 font-bold text-xs flex items-center justify-center mb-1.5">
+                          <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 font-bold text-xs flex items-center justify-center mb-1.5 text-slate-800 dark:text-slate-200">
                             {emp.nombre.charAt(0)}
                           </div>
-                          <p className="text-xs font-semibold truncate text-slate-900 dark:text-white">
-                            {emp.nombre}
+                          <p className="text-xs font-bold truncate text-slate-900 dark:text-white">
+                            {emp.nombre.split(' ')[0]}
                           </p>
                           <p className="text-[10px] text-slate-500 truncate">
                             {emp.especialidad || 'Especialista'}
@@ -691,10 +801,10 @@ export default function PortalReservaPage() {
                     </div>
                   </div>
 
-                  {/* Carrusel de Días estilo iOS Calendar */}
+                  {/* 2. Selector de día */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">
-                      Selecciona la Fecha
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      ¿Qué día te viene mejor?
                     </label>
                     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x">
                       {proximosDias.map((d) => {
@@ -707,34 +817,34 @@ export default function PortalReservaPage() {
                               setFechaSel(d.iso)
                               setHoraSel('')
                             }}
-                            className={`min-w-[56px] sm:min-w-[62px] py-2 sm:py-2.5 px-2 rounded-2xl flex flex-col items-center justify-center border transition-all shrink-0 ${
+                            className={`min-w-[60px] py-2.5 px-2 rounded-2xl flex flex-col items-center justify-center border transition-all shrink-0 active:scale-95 ${
                               sel
-                                ? 'bg-slate-950 dark:bg-white text-white dark:text-slate-950 border-slate-950 shadow-md'
-                                : 'bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100'
+                                ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 border-slate-900 shadow-md font-bold'
+                                : 'bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/80 hover:bg-slate-100'
                             }`}
                           >
-                            <span className="text-[10px] uppercase font-semibold opacity-70">
+                            <span className="text-[10px] uppercase font-bold opacity-75">
                               {d.diaSemana}
                             </span>
-                            <span className="text-base font-bold my-0.5">{d.diaNum}</span>
-                            <span className="text-[10px] capitalize opacity-70">{d.mes}</span>
+                            <span className="text-base font-black my-0.5">{d.diaNum}</span>
+                            <span className="text-[10px] capitalize opacity-75">{d.mes}</span>
                           </button>
                         )
                       })}
                     </div>
                   </div>
 
-                  {/* Horarios disponibles en burbujas hápticas */}
+                  {/* 3. Selector de hora */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-2">
-                      Horarios Disponibles
+                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                      Selecciona la hora de llegada
                     </label>
                     {cargandoSlots ? (
                       <div className="py-6 flex justify-center">
-                        <Loader text="Buscando horarios..." />
+                        <Loader text="Consultando horarios libres..." />
                       </div>
                     ) : (
-                      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                         {slots.map((slot) => {
                           const horaFormat = slot.hora_inicio.slice(0, 5)
                           const activa = horaSel === horaFormat
@@ -744,11 +854,11 @@ export default function PortalReservaPage() {
                               type="button"
                               disabled={!slot.disponible}
                               onClick={() => setHoraSel(horaFormat)}
-                              className={`py-2.5 px-1.5 sm:px-2 rounded-xl text-xs font-semibold text-center transition-all ${
+                              className={`py-3 px-2 rounded-2xl text-xs font-bold text-center transition-all active:scale-95 ${
                                 !slot.disponible
-                                  ? 'bg-slate-100 dark:bg-slate-800/40 text-slate-300 dark:text-slate-600 line-through cursor-not-allowed'
+                                  ? 'bg-slate-100 dark:bg-slate-800/40 text-slate-300 dark:text-slate-600 line-through cursor-not-allowed border border-transparent'
                                   : activa
-                                  ? 'bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-md'
+                                  ? 'bg-indigo-600 text-white shadow-md ring-2 ring-indigo-500/30'
                                   : 'bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-slate-400'
                               }`}
                             >
@@ -760,40 +870,42 @@ export default function PortalReservaPage() {
                     )}
                   </div>
 
-                  {/* Botón inferior del Sheet */}
+                  {/* Botón Siguiente */}
                   <div className="pt-2">
                     <Button
                       disabled={!horaSel}
                       onClick={() => setPasoSubVentana(2)}
-                      className="w-full py-3.5 rounded-2xl font-semibold text-sm bg-slate-950 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 text-white"
+                      className="w-full py-4 rounded-2xl font-bold text-sm bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 text-white shadow-lg active:scale-95 transition-all"
                     >
-                      <span>Continuar con mis datos</span>
+                      <span>Siguiente: Mis datos de contacto</span>
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
                 </div>
               )}
 
-              {/* PASO 2: FORMULARIO DE CONTACTO DIRECTO (SIN REGISTER) */}
+              {/* PASO 2: FORMULARIO AMIGABLE (SIN REGISTROS) */}
               {pasoSubVentana === 2 && (
                 <form onSubmit={handleConfirmarCita} className="space-y-4">
-                  {/* Resumen rápido de cita */}
-                  <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs flex justify-between items-center">
+                  {/* Resumen del turno */}
+                  <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-xs flex justify-between items-center">
                     <div>
-                      <p className="font-semibold text-slate-900 dark:text-white">
-                        {fechaSel} • {horaSel} hrs
+                      <p className="font-bold text-slate-900 dark:text-white text-sm">
+                        {fechaSel} a las {horaSel} hrs
                       </p>
-                      <p className="text-slate-500 text-[11px]">Con {empleadoSel?.nombre}</p>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs">
+                        Atención con: {empleadoSel?.nombre || 'Primer profesional libre'}
+                      </p>
                     </div>
-                    <span className="font-bold text-sm text-slate-950 dark:text-white">
+                    <span className="font-black text-base text-indigo-700 dark:text-indigo-300">
                       {formatearMoneda(servicioSel.precio_base)}
                     </span>
                   </div>
 
                   <div className="space-y-3">
                     <Input
-                      label="Nombre y Apellidos"
-                      placeholder="Ej. Sofia Méndez"
+                      label="¿Cómo te llamas?"
+                      placeholder="Ej. Sofía Méndez"
                       value={nombreCliente}
                       onChange={(e) => setNombreCliente(e.target.value)}
                       leftIcon={<User className="w-4 h-4" />}
@@ -801,7 +913,7 @@ export default function PortalReservaPage() {
                     />
 
                     <Input
-                      label="Teléfono / WhatsApp (para avisos)"
+                      label="Teléfono o WhatsApp (para mandarte el aviso)"
                       placeholder="+1 (555) 345-6789"
                       type="tel"
                       value={telefonoCliente}
@@ -811,30 +923,35 @@ export default function PortalReservaPage() {
                     />
 
                     <Input
-                      label="Correo Electrónico (para comprobante)"
+                      label="Correo electrónico (opcional para comprobante)"
                       placeholder="sofia@correo.com"
                       type="email"
                       value={emailCliente}
                       onChange={(e) => setEmailCliente(e.target.value)}
                       leftIcon={<Mail className="w-4 h-4" />}
-                      required
                     />
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                        Notas especiales (opcional)
+                      <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        ¿Algún comentario o nota especial? (opcional)
                       </label>
                       <textarea
                         rows={2}
                         value={notasCliente}
                         onChange={(e) => setNotasCliente(e.target.value)}
-                        placeholder="Algún requerimiento previo..."
-                        className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-base sm:text-xs focus:ring-2 focus:ring-slate-950 dark:focus:ring-white focus:outline-none"
+                        placeholder="Ej. Prefiero corte con tijera / Tengo el cabello largo..."
+                        className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-base sm:text-xs focus:ring-2 focus:ring-indigo-600 focus:outline-none"
                       />
                     </div>
                   </div>
 
-                  <div className="pt-3 flex gap-2">
+                  {/* Mensaje de tranquilidad */}
+                  <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/60 text-[11px] text-slate-600 dark:text-slate-400 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+                    <span>Sin registros ni tarjetas previas. Pagas directo en el local cuando te atiendan.</span>
+                  </div>
+
+                  <div className="pt-2 flex gap-2">
                     <Button
                       type="button"
                       variant="outline"
@@ -846,10 +963,10 @@ export default function PortalReservaPage() {
                     <Button
                       type="submit"
                       isLoading={guardandoCita}
-                      className="flex-1 py-3.5 rounded-2xl font-semibold text-sm bg-slate-950 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 dark:text-slate-950 text-white"
+                      className="flex-1 py-3.5 rounded-2xl font-bold text-sm bg-emerald-600 hover:bg-emerald-700 text-white shadow-md active:scale-95 transition-all"
                     >
                       <CheckCircle2 className="w-4 h-4 mr-2" />
-                      <span>Confirmar Reserva</span>
+                      <span>Confirmar mi Cita</span>
                     </Button>
                   </div>
                 </form>
@@ -857,91 +974,95 @@ export default function PortalReservaPage() {
 
               {/* PASO 3: CONFIRMACIÓN EXITOSA */}
               {pasoSubVentana === 3 && citaConfirmada && (
-                <div className="text-center py-4 space-y-5">
-                  <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
-                    <CheckCircle2 className="w-8 h-8" />
+                <div className="text-center py-3 space-y-4">
+                  <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto shadow-sm">
+                    <CheckCircle2 className="w-10 h-10" />
                   </div>
 
                   <div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    <span className="inline-block px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
                       Folio: {folioReserva}
                     </span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                      ¡Cita Agendada!
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white">
+                      ¡Tu cita está apartada! 🎉
                     </h3>
                     <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                      Gracias, {nombreCliente}. Te hemos reservado el turno con{' '}
-                      {empleadoSel?.nombre}.
+                      Gracias, {nombreCliente}. Te esperamos el {fechaSel} a las {horaSel} hrs.
                     </p>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-xs space-y-2 text-left max-w-sm mx-auto">
+                  {/* Resumen de cita */}
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-2 text-left max-w-sm mx-auto">
                     <div className="flex justify-between">
                       <span className="text-slate-400">Servicio:</span>
-                      <span className="font-semibold text-slate-900 dark:text-white">
+                      <span className="font-bold text-slate-900 dark:text-white">
                         {servicioSel.nombre}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400">Fecha y Hora:</span>
-                      <span className="font-semibold text-slate-900 dark:text-white">
+                      <span className="font-bold text-slate-900 dark:text-white">
                         {fechaSel} — {horaSel} hrs
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Total a pagar:</span>
-                      <span className="font-bold text-slate-900 dark:text-white">
+                      <span className="text-slate-400">Total a pagar al llegar:</span>
+                      <span className="font-black text-slate-900 dark:text-white">
                         {formatearMoneda(servicioSel.precio_base)}
                       </span>
                     </div>
                   </div>
 
-                  {/* Acciones iOS */}
-                  <div className="flex flex-wrap justify-center gap-2 pt-2">
-                    <a
-                      href={generarUrlGoogleCalendar(citaConfirmada)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Button variant="outline" size="sm" className="rounded-xl gap-1.5 text-xs">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>Google Calendar</span>
-                      </Button>
-                    </a>
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl gap-1.5 text-xs"
-                      onClick={() => descargarArchivoIcs(citaConfirmada)}
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      <span>Descargar .ics</span>
-                    </Button>
-
+                  {/* Acciones de WhatsApp y Calendario */}
+                  <div className="flex flex-col gap-2 pt-1 max-w-sm mx-auto">
                     {configuracion.telefono_soporte && (
                       <a
                         href={generarUrlWhatsApp(
                           configuracion.telefono_soporte,
-                          `Hola, confirmo mi cita para ${servicioSel.nombre} el ${fechaSel} a las ${horaSel}. Mi nombre es ${nombreCliente}.`
+                          `Hola, confirmo mi cita para ${servicioSel.nombre} el día ${fechaSel} a las ${horaSel} hrs a nombre de ${nombreCliente}. Mi folio es ${folioReserva}.`
                         )}
                         target="_blank"
                         rel="noreferrer"
+                        className="w-full"
                       >
-                        <Button variant="outline" size="sm" className="rounded-xl gap-1.5 text-xs">
-                          <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
-                          <span>WhatsApp</span>
+                        <Button className="w-full rounded-2xl gap-2 font-bold bg-emerald-600 hover:bg-emerald-700 text-white">
+                          <MessageSquare className="w-4 h-4" />
+                          <span>Abrir confirmación en WhatsApp</span>
                         </Button>
                       </a>
                     )}
+
+                    <div className="flex gap-2">
+                      <a
+                        href={generarUrlGoogleCalendar(citaConfirmada)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1"
+                      >
+                        <Button variant="outline" size="sm" className="w-full rounded-2xl gap-1.5 text-xs">
+                          <Calendar className="w-3.5 h-3.5 text-blue-500" />
+                          <span>Google Calendar</span>
+                        </Button>
+                      </a>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 rounded-2xl gap-1.5 text-xs"
+                        onClick={() => descargarArchivoIcs(citaConfirmada)}
+                      >
+                        <FileText className="w-3.5 h-3.5 text-indigo-500" />
+                        <span>Guardar en iPhone</span>
+                      </Button>
+                    </div>
                   </div>
 
                   <div className="pt-2">
                     <Button
                       onClick={handleCerrarSubVentana}
-                      className="rounded-2xl px-6 text-xs bg-slate-950 text-white dark:bg-white dark:text-slate-950"
+                      className="rounded-2xl px-8 text-xs bg-slate-950 text-white dark:bg-white dark:text-slate-950 font-bold"
                     >
-                      Listo
+                      Listo, gracias
                     </Button>
                   </div>
                 </div>
@@ -951,30 +1072,29 @@ export default function PortalReservaPage() {
         </div>
       )}
 
-      {/* ─── 6. INFORMACIÓN Y UBICACIÓN DE LA TIENDA ─────────────────────── */}
-      <section id="contacto" className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 text-center space-y-4">
-        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-slate-900 dark:text-white">
-          Visítanos en nuestras instalaciones
+      {/* ─── 6. UBICACIÓN Y CONTACTO DEL LOCAL (ESTILO APP) ───────────────── */}
+      <section id="contacto" className="max-w-4xl mx-auto w-full px-4 sm:px-6 pt-10 pb-6 space-y-4">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          📍 Dónde encontrarnos
         </h2>
-        <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
-          Atendemos con puntualidad y con los más estrictos estándares de confort y bienestar.
-        </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 sm:pt-4 text-xs">
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-black/[0.05] dark:border-white/[0.08]">
-            <MapPin className="w-4 h-4 mx-auto mb-2 text-slate-700 dark:text-slate-300" />
-            <p className="font-semibold text-slate-900 dark:text-white">Dirección</p>
-            <p className="text-slate-400 mt-1">Sede Principal Centro • Ciudad</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+          <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+            <MapPin className="w-5 h-5 text-indigo-600 mb-1" />
+            <p className="font-bold text-slate-900 dark:text-white">Nuestra Dirección</p>
+            <p className="text-slate-500 dark:text-slate-400">Av. Central #405, Zona Centro (Estacionamiento propio)</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-black/[0.05] dark:border-white/[0.08]">
-            <Clock className="w-4 h-4 mx-auto mb-2 text-slate-700 dark:text-slate-300" />
-            <p className="font-semibold text-slate-900 dark:text-white">Horarios</p>
-            <p className="text-slate-400 mt-1">Lun - Sáb: 09:00 - 19:00</p>
+
+          <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+            <Clock className="w-5 h-5 text-emerald-600 mb-1" />
+            <p className="font-bold text-slate-900 dark:text-white">Horarios de Atención</p>
+            <p className="text-slate-500 dark:text-slate-400">Lunes a Sábado: 09:00 a 19:00 hrs</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-black/[0.05] dark:border-white/[0.08]">
-            <Phone className="w-4 h-4 mx-auto mb-2 text-slate-700 dark:text-slate-300" />
-            <p className="font-semibold text-slate-900 dark:text-white">Atención</p>
-            <p className="text-slate-400 mt-1">
+
+          <div className="p-4 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 space-y-1 shadow-xs">
+            <Phone className="w-5 h-5 text-blue-600 mb-1" />
+            <p className="font-bold text-slate-900 dark:text-white">Contacto Directo</p>
+            <p className="text-slate-500 dark:text-slate-400">
               {configuracion.telefono_soporte || '+1 (555) 019-2834'}
             </p>
           </div>
@@ -982,7 +1102,7 @@ export default function PortalReservaPage() {
       </section>
 
       {/* ─── 7. FOOTER MINIMALISTA CON ACCESO ADMINISTRATIVO ─────────────── */}
-      <footer className="max-w-4xl mx-auto px-4 sm:px-6 pt-12 pb-28 sm:pb-32 text-center text-[11px] text-slate-400 space-y-3">
+      <footer className="max-w-4xl mx-auto w-full px-4 sm:px-6 pt-6 pb-28 text-center text-xs text-slate-400 space-y-3">
         <p>
           {configuracion.texto_pie_pagina ||
             `© ${new Date().getFullYear()} ${nombreMarca}. Todos los derechos reservados.`}
@@ -997,60 +1117,56 @@ export default function PortalReservaPage() {
             className="inline-flex items-center gap-1.5 text-slate-400 hover:text-slate-700 dark:text-slate-600 dark:hover:text-slate-300 transition-colors p-1.5 rounded-lg opacity-70 hover:opacity-100"
           >
             <Lock className="w-3.5 h-3.5" />
-            <span className="text-[10px] tracking-wide">Acceso personal</span>
+            <span className="text-[11px] tracking-wide">Acceso personal</span>
           </Link>
         </div>
       </footer>
 
-      {/* ─── 8. MENÚ INFERIOR FLOTANTE PARA CLIENTES (SOLO VISTA CLIENTE) ── */}
-      <div className="fixed bottom-4 sm:bottom-5 inset-x-0 z-40 flex justify-center px-3 sm:px-4 pointer-events-none">
-        <div className="pointer-events-auto backdrop-blur-2xl bg-white/85 dark:bg-slate-950/85 border border-black/[0.08] dark:border-white/[0.12] shadow-[0_16px_40px_rgba(0,0,0,0.16)] rounded-full px-3 sm:px-5 py-1.5 sm:py-2 flex items-center gap-1.5 sm:gap-3 max-w-[calc(100vw-24px)] transition-all duration-300">
-          {/* Botón Servicios */}
-          <a
-            href="#servicios"
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
-          >
-            <Layers className="w-4 h-4 shrink-0" />
-            <span className="hidden xs:inline sm:inline">Servicios</span>
-          </a>
+      {/* ─── 8. BARRA DE NAVEGACIÓN INFERIOR NATIVA (APP TAB BAR) ────────── */}
+      <nav className="fixed bottom-0 inset-x-0 z-40 backdrop-blur-2xl bg-white/90 dark:bg-slate-950/90 border-t border-slate-200/80 dark:border-slate-800 shadow-[0_-8px_25px_rgba(0,0,0,0.06)] px-4 py-2 flex justify-around items-center max-w-lg mx-auto sm:rounded-t-3xl transition-all">
+        {/* Pestaña Servicios */}
+        <a
+          href="#servicios"
+          className="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >
+          <Scissors className="w-4 h-4" />
+          <span className="text-[10px] font-bold">Servicios</span>
+        </a>
 
-          {/* Botón Agendar Cita (Call to action principal estilo Apple) */}
-          <button
-            type="button"
-            onClick={() => handleAbrirSubVentana(servicios[0])}
-            className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-semibold bg-slate-950 dark:bg-white text-white dark:text-slate-950 shadow-md hover:opacity-90 transition-opacity shrink-0"
-          >
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-            <span>Agendar Cita</span>
-          </button>
+        {/* Botón Central Destacado: Reservar Turno */}
+        <button
+          type="button"
+          onClick={() => handleAbrirSubVentana(servicios[0])}
+          className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs shadow-md shadow-indigo-500/25 active:scale-95 transition-all"
+        >
+          <CalendarCheck className="w-4 h-4" />
+          <span>Apartar Cita</span>
+        </button>
 
-          {/* Botón Ubicación */}
-          <a
-            href="#contacto"
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
-          >
-            <Compass className="w-4 h-4 shrink-0" />
-            <span className="hidden xs:inline sm:inline">Ubicación</span>
-          </a>
+        {/* Pestaña Ubicación */}
+        <a
+          href="#contacto"
+          className="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+        >
+          <Compass className="w-4 h-4" />
+          <span className="text-[10px] font-bold">Ubicación</span>
+        </a>
 
-          <div className="w-[1px] h-5 bg-black/[0.08] dark:bg-white/[0.12] mx-0.5 shrink-0" />
-
-          {/* Alternar fondo blanco / oscuro en dock */}
-          <button
-            type="button"
-            onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
-            className="p-1.5 sm:p-2 rounded-full text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors shrink-0"
-            title={app?.theme === 'dark' ? 'Cambiar a fondo blanco' : 'Cambiar a fondo oscuro'}
-            aria-label="Alternar fondo blanco y oscuro"
-          >
-            {app?.theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </button>
-        </div>
-      </div>
+        {/* Alternador Claro / Oscuro */}
+        <button
+          type="button"
+          onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
+          className="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+          title={app?.theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+        >
+          {app?.theme === 'dark' ? (
+            <Sun className="w-4 h-4 text-amber-400" />
+          ) : (
+            <Moon className="w-4 h-4" />
+          )}
+          <span className="text-[10px] font-bold">{app?.theme === 'dark' ? 'Claro' : 'Oscuro'}</span>
+        </button>
+      </nav>
     </div>
   )
 }

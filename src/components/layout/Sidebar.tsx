@@ -6,6 +6,7 @@ import {
   Users,
   Briefcase,
   Receipt,
+  Share2,
   Settings,
   ChevronLeft,
 } from 'lucide-react'
@@ -20,13 +21,14 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard',  to: '/dashboard',  icon: <LayoutDashboard className="w-5 h-5" /> },
-  { label: 'Citas',      to: '/citas',       icon: <CalendarDays    className="w-5 h-5" /> },
-  { label: 'Servicios',  to: '/servicios',   icon: <Sparkles        className="w-5 h-5" /> },
-  { label: 'Empleados',  to: '/empleados',   icon: <Briefcase       className="w-5 h-5" /> },
-  { label: 'Clientes',   to: '/clientes',    icon: <Users           className="w-5 h-5" /> },
-  { label: 'Finanzas',   to: '/finanzas',    icon: <Receipt         className="w-5 h-5" /> },
-  { label: 'Ajustes',    to: '/ajustes',     icon: <Settings        className="w-5 h-5" /> },
+  { label: 'Dashboard',     to: '/dashboard',     icon: <LayoutDashboard className="w-5 h-5" /> },
+  { label: 'Citas',         to: '/citas',          icon: <CalendarDays    className="w-5 h-5" /> },
+  { label: 'Servicios',     to: '/servicios',      icon: <Sparkles        className="w-5 h-5" /> },
+  { label: 'Empleados',     to: '/empleados',      icon: <Briefcase       className="w-5 h-5" /> },
+  { label: 'Clientes',      to: '/clientes',       icon: <Users           className="w-5 h-5" /> },
+  { label: 'Finanzas',      to: '/finanzas',       icon: <Receipt         className="w-5 h-5" /> },
+  { label: 'Integraciones', to: '/integraciones',  icon: <Share2          className="w-5 h-5" /> },
+  { label: 'Ajustes',       to: '/ajustes',        icon: <Settings        className="w-5 h-5" /> },
 ]
 
 export function Sidebar() {

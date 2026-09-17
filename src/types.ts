@@ -198,6 +198,10 @@ export interface Cita {
   recurrencia?: Recurrencia
   respuestas_campos?: RespuestaCampo[]
   precio_total: number
+  modalidad?: 'presencial' | 'virtual'
+  enlace_videollamada?: string
+  plataforma_videollamada?: 'meet' | 'zoom'
+  google_calendar_event_id?: string
   created_at: string
 }
 
@@ -333,6 +337,64 @@ export interface ItemListaEspera {
   notas?: string
   estado: EstadoListaEspera
   created_at: string
+}
+
+// ─── Fase 4: Integraciones y Notificaciones ──────────────────────────────
+export type EstadoIntegracion = 'conectado' | 'desconectado' | 'error'
+export type TipoIntegracion = 'google_calendar' | 'google_meet' | 'zoom' | 'whatsapp' | 'webpush'
+
+export interface Integracion {
+  id: string
+  tipo: TipoIntegracion
+  nombre: string
+  descripcion: string
+  estado: EstadoIntegracion
+  icono?: string
+  cuenta_vinculada?: string
+  sincronizacion_automatica?: boolean
+  ultima_sync?: string
+}
+
+export type EventoWebhook =
+  | 'cita.creada'
+  | 'cita.confirmada'
+  | 'cita.cancelada'
+  | 'cita.pagada'
+  | 'cita.reembolsada'
+  | 'cliente.creado'
+
+export interface Webhook {
+  id: number
+  url: string
+  eventos: EventoWebhook[]
+  secret_key: string
+  activo: boolean
+  ultimo_envio?: string
+  ultimo_status?: number
+}
+
+export type TipoNotificacion = 'cita' | 'pago' | 'recordatorio' | 'sistema' | 'espera'
+
+export interface Notificacion {
+  id: number
+  titulo: string
+  mensaje: string
+  tipo: TipoNotificacion
+  leida: boolean
+  fecha: string
+  enlace?: string
+}
+
+export type CanalNotificacion = 'whatsapp' | 'email' | 'push' | 'sms'
+
+export interface PlantillaMensaje {
+  id: number
+  canal: CanalNotificacion
+  evento: string
+  nombre: string
+  asunto?: string
+  cuerpo: string
+  activo: boolean
 }
 
 // ─── UI ────────────────────────────────────────────────────────────────────

@@ -12,6 +12,7 @@ import ServiciosPage from '@/pages/ServiciosPage'
 import EmpleadosPage from '@/pages/EmpleadosPage'
 import ClientesPage from '@/pages/ClientesPage'
 import PagosPage from '@/pages/PagosPage'
+import IntegracionesPage from '@/pages/IntegracionesPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
 // ─── Guard de rutas privadas ───────────────────────────────────────────────
@@ -88,6 +89,15 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <PagosPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/integraciones"
+        element={
+          <PrivateRoute>
+            <IntegracionesPage />
           </PrivateRoute>
         }
       />

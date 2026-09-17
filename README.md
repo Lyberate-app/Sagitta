@@ -132,13 +132,17 @@ sagitta/
     │   ├── useApi.ts               # Hook genérico con estados: data, isLoading, error
     │   └── useToast.ts             # Acceso al sistema de notificaciones toast
     │
+    ├── utils/
+    │   └── calendar.ts             # Generador iCalendar (.ics) RFC 5545, Google Calendar y links WhatsApp
+    │
     ├── services/
     │   ├── api.client.ts           # Cliente HTTP: JWT automático, manejo 401, authService
     │   ├── citas.service.ts        # CRUD de citas y consulta de disponibilidad
     │   ├── servicios.service.ts    # CRUD de servicios y categorías del negocio
     │   ├── empleados.service.ts    # Directorio de profesionales, horarios y disponibilidad
     │   ├── clientes.service.ts     # Directorio de clientes y búsqueda
-    │   └── pagos.service.ts        # Facturación, cupones, reembolsos, paquetes y lista de espera
+    │   ├── pagos.service.ts        # Facturación, cupones, reembolsos, paquetes y lista de espera
+    │   └── integraciones.service.ts # Google Calendar, Meet, Zoom, Webhooks, Push y WhatsApp
     │
     ├── components/
     │   ├── ui/
@@ -156,7 +160,7 @@ sagitta/
     │   │   └── index.ts            # Barrel export de todos los UI
     │   │
     │   ├── layout/
-    │   │   ├── Navbar.tsx          # Barra superior: logo, toggle sidebar, tema, usuario
+    │   │   ├── Navbar.tsx          # Barra superior: logo, toggle sidebar, CentroNotificaciones, usuario
     │   │   ├── Sidebar.tsx         # Menú lateral colapsable con NavLinks activos
     │   │   ├── PageWrapper.tsx     # Composición: Navbar + Sidebar + main + ToastContainer
     │   │   └── index.ts            # Barrel export
@@ -174,14 +178,20 @@ sagitta/
     │   │   ├── PasoFechaHora.tsx     # Paso 3: Selección de día y horario disponible
     │   │   ├── PasoConfirmacion.tsx  # Paso 4: Resumen, citas recurrentes, add-ons y cupones
     │   │   ├── CarritoReserva.tsx    # Modal de reservas múltiples en una sola transacción
-    │   │   ├── TarjetaCita.tsx       # Tarjeta individual con detalles y acciones de cita
+    │   │   ├── TarjetaCita.tsx       # Tarjeta individual con .ics, WhatsApp y botón de videollamada
     │   │   └── index.ts
     │   │
-    │   └── pagos/
-    │       ├── FacturaModal.tsx      # Comprobante / factura detallada imprimible
-    │       ├── CuponInput.tsx        # Validación y aplicación en vivo de códigos promocionales
-    │       ├── ServiciosExtraSelector.tsx # Selector de tratamientos add-ons para citas
-    │       ├── ModalListaEspera.tsx  # Modal para ingresar a lista de espera
+    │   ├── pagos/
+    │   │   ├── FacturaModal.tsx      # Comprobante / factura detallada imprimible
+    │   │   ├── CuponInput.tsx        # Validación y aplicación en vivo de códigos promocionales
+    │   │   ├── ServiciosExtraSelector.tsx # Selector de tratamientos add-ons para citas
+    │   │   ├── ModalListaEspera.tsx  # Modal para ingresar a lista de espera
+    │   │   └── index.ts
+    │   │
+    │   └── integraciones/
+    │       ├── CentroNotificaciones.tsx # Dropdown interactivo en campana del Navbar
+    │       ├── ModalWebhook.tsx      # Modal para crear webhooks con firma HMAC SHA-256
+    │       ├── PlantillaEditor.tsx   # Editor de plantillas WhatsApp/Email/Push con preview
     │       └── index.ts
     │
     ├── pages/
@@ -193,18 +203,20 @@ sagitta/
     │   ├── EmpleadosPage.tsx       # Directorio de profesionales y visor de horarios laborales
     │   ├── ClientesPage.tsx        # Directorio de clientes con búsqueda y registro
     │   ├── PagosPage.tsx           # Panel de finanzas: facturas, cupones, reembolsos y lista de espera
+    │   ├── IntegracionesPage.tsx   # Hub de integraciones: Calendarios, Meet/Zoom, WhatsApp, Push y Webhooks
     │   └── NotFoundPage.tsx        # Página 404 con botón de regreso
     │
     └── mocks/
         ├── browser.ts              # Setup MSW Service Worker
         └── handlers/
-            ├── auth.handlers.ts      # Mock: POST /login, GET /me, POST /logout
-            ├── citas.handlers.ts     # Mock: CRUD /citas y /citas/disponibilidad
-            ├── servicios.handlers.ts # Mock: CRUD /servicios y /categorias-servicio
-            ├── empleados.handlers.ts # Mock: /empleados, horarios y slots
-            ├── clientes.handlers.ts  # Mock: /clientes y búsqueda reactiva
-            ├── pagos.handlers.ts     # Mock: facturas, cupones, reembolsos, paquetes y lista de espera
-            └── index.ts              # Agrupa todos los handlers (crece con cada fase)
+            ├── auth.handlers.ts          # Mock: POST /login, GET /me, POST /logout
+            ├── citas.handlers.ts         # Mock: CRUD /citas y /citas/disponibilidad
+            ├── servicios.handlers.ts     # Mock: CRUD /servicios y /categorias-servicio
+            ├── empleados.handlers.ts     # Mock: /empleados, horarios y slots
+            ├── clientes.handlers.ts      # Mock: /clientes y búsqueda reactiva
+            ├── pagos.handlers.ts         # Mock: facturas, cupones, reembolsos, paquetes y lista de espera
+            ├── integraciones.handlers.ts # Mock: integraciones, webhooks, notificaciones y plantillas
+            └── index.ts                  # Agrupa todos los handlers (crece con cada fase)
 ```
 
 ---
@@ -381,27 +393,51 @@ VITE_USE_MOCKS=false
 
 ---
 
-### Fase 4 — Integraciones y Notificaciones 🔄 `PRÓXIMA`
+### Fase 4 — Integraciones y Notificaciones ✅ `COMPLETADA`
 **Rama:** `feat/fase-4-integraciones`  
-**Descripción:** Conectar Sagitta con el ecosistema de herramientas del negocio.
+**Descripción:** Conectar Sagitta con el ecosistema de herramientas del negocio: calendarios externos, videollamadas automáticas, mensajería WhatsApp, alertas Push y webhooks seguros.
 
-**Lo que incluye:**
-- **Google Calendar:** sincronización bidireccional (OAuth2)
-- **Apple Calendar:** exportar/importar vía `.ics`
-- **Google Meet:** link automático al reservar cita virtual
-- **Zoom:** creación automática de reunión vía API
-- **WhatsApp:** recordatorios y confirmaciones (WhatsApp Business API)
-- **Notificaciones push:** Web Push API via Service Worker
-- **Email transaccional:** confirmación, recordatorio, cancelación
-- **Webhooks:** triggers en eventos (cita creada, cancelada, pagada)
-- **Google Analytics:** tracking de conversiones de reserva
-- **Base de datos de clientes:** perfiles completos + importación masiva CSV
+**Lo implementado:**
+- **Google Calendar & Apple / Outlook (.ics):**
+  - Generador y descargador de archivos `.ics` bajo estándar RFC 5545 (`src/utils/calendar.ts`) para integración universal con iOS, macOS y Microsoft Outlook.
+  - Generador de enlaces web directos a Google Calendar (`generarGoogleCalendarUrl`) con parámetros automáticos de fecha, título, ubicación y descripción.
+  - Sincronización y vinculación de cuenta de Google Calendar desde el hub de integraciones.
+- **Videollamadas y Telemedicina (Google Meet & Zoom):**
+  - Soporte de campo `modalidad` (`presencial` | `virtual`) y `enlace_videollamada` en las citas (`src/types.ts`).
+  - Creación y asignación de salas virtuales de Google Meet y Zoom para teleconsultas.
+  - Botón interactivo "Unirse a Videollamada" integrado en las tarjetas de citas (`TarjetaCita.tsx`).
+- **WhatsApp Automatizado (WhatsApp Business Cloud API):**
+  - Integración para envío de recordatorios 24 horas antes y confirmaciones instantáneas.
+  - Botón de envío directo por WhatsApp con plantilla preformateada en cada cita (`generarWhatsAppUrl`).
+- **Centro de Notificaciones en Tiempo Real:**
+  - Dropdown interactivo con icono de campana en el `Navbar` (`CentroNotificaciones.tsx`) con contador de no leídas, selector de tipo (sistema, cita, pago, recordatorio), marcado como leída y limpieza general.
+- **Notificaciones Web Push en Navegador:**
+  - Integración y simulador de Web Push API mediante Service Worker para alertas en tiempo real al staff y clientes.
+- **Webhooks y Eventos Externos con HMAC:**
+  - Sistema de registro de endpoints Webhook con clave secreta criptográfica (`secret_key`) para validación de firma HMAC SHA-256.
+  - Selector de eventos suscritos (`cita.creada`, `cita.actualizada`, `cita.cancelada`, `pago.completado`, `reembolso.creado`, etc.).
+  - Modal de alta (`ModalWebhook.tsx`), copia rápida de Secret Key y disparador de ping de prueba en vivo (`POST /api/webhooks/{id}/probar`).
+- **Editor de Plantillas de Mensajes:**
+  - Personalizador visual de plantillas para WhatsApp, Email y Web Push (`PlantillaEditor.tsx`) con inserción de variables dinámicas (`{{cliente}}`, `{{servicio}}`, `{{fecha}}`, `{{hora}}`, `{{profesional}}`, `{{enlace_videollamada}}`) y vista previa en vivo tipo chat.
+- **Panel Hub de Integraciones (`/integraciones`):**
+  - 4 Pestañas operativas: *Calendarios & Videollamadas*, *WhatsApp Automatizado*, *Email & Web Push*, y *Webhooks & API*.
+  - Handlers MSW completos en `src/mocks/handlers/integraciones.handlers.ts`.
+
+**Endpoints que el compañero backend debe implementar:**
+- `GET /api/integraciones`: Listar servicios vinculados y estado (`conectado`/`desconectado`)
+- `POST /api/integraciones/{id}/toggle`: Conectar o desvincular un proveedor externo
+- `GET /api/webhooks`, `POST /api/webhooks`, `DELETE /api/webhooks/{id}`: CRUD de endpoints receptores
+- `POST /api/webhooks/{id}/probar`: Disparar ping de prueba con payload mock y verificar HTTP status code
+- `GET /api/notificaciones`: Listar notificaciones del usuario autenticado
+- `PUT /api/notificaciones/{id}/leer`, `PUT /api/notificaciones/marcar-todas-leidas`: Actualizar estado de lectura
+- `GET /api/plantillas-mensaje`, `PUT /api/plantillas-mensaje/{id}`: Lectura y edición de plantillas transaccionales
+- `POST /api/whatsapp/enviar-recordatorio`: Endpoint backend para despachar mensaje a través del proveedor WhatsApp
 
 ---
 
-### Fase 5 — Panel Admin y Personalización 🎨 `PLANIFICADA`
+### Fase 5 — Panel Admin y Personalización 🔄 `PRÓXIMA`
 **Rama:** `feat/fase-5-admin`  
-**Descripción:** Dashboard completo para el negocio y herramientas de personalización visual.
+**Descripción:** Dashboard analítico integral para el negocio, reportes exportables y herramientas avanzadas de personalización visual y branding sin código.
 
 **Lo que incluye:**
 - **Dashboard de métricas (KPIs):** ingresos, ocupación, tasa de cancelación, conversiones

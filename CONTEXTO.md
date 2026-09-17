@@ -7,11 +7,12 @@
 
 ## 📍 Estado Actual del Proyecto
 
-* **Fase en Curso:** **Fase 3 — Pagos, Finanzas y Servicios Avanzados** 🔄
-* **Rama de Trabajo Activa:** `feat/fase-3-pagos`
+* **Fase Completada:** **Fase 4 — Integraciones y Notificaciones** ✅
+* **Próxima Fase:** **Fase 5 — Panel Admin y Personalización** 🔄
+* **Rama de Trabajo Actual:** `feat/fase-4-integraciones`
 * **Frontend:** React 19 + TypeScript (strict) + Vite 6 + Tailwind CSS 3.4 + PWA (Workbox) + MSW 2.6
 * **Backend:** PHP nativo + MySQL (a cargo del compañero; en frontend consumimos REST o mocks de MSW)
-* **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado exitosamente con Vite y TypeScript).
+* **Build Status:** ✅ Compila sin errores (`npm run build` ejecutado con 0 errores TypeScript y bundle Vite generado).
 
 ---
 
@@ -56,14 +57,41 @@
   * Handlers MSW: `pagos.handlers.ts` con validación de códigos promocionales (`BIENVENIDA10`, `SAGITTA20`, etc.).
   * Integración en Wizard de Reservas (`PasoConfirmacion.tsx`) y detalle de Citas (`CitasPage.tsx`).
 
-### 🔄 Fase 4 — Integraciones y Notificaciones (Próxima a Desarrollar)
-* **Rama Planificada:** `feat/fase-4-integraciones`
+### ✅ Fase 4 — Integraciones y Notificaciones (Completada)
+* **Rama:** `feat/fase-4-integraciones`
+* **Entregables:**
+  * Tipos en `src/types.ts`: `modalidad` ('presencial' | 'virtual'), `enlace_videollamada`, `Integracion`, `Webhook`, `Notificacion`, `PlantillaMensaje`.
+  * Utilidades de calendario (`src/utils/calendar.ts`):
+    * Generador / descargador de `.ics` universal (RFC 5545) para Apple Calendar y Outlook.
+    * Generador de URL directa para añadir eventos a Google Calendar web.
+    * Generador de URL directa `wa.me` para avisos rápidos a WhatsApp.
+  * Componentes de Integraciones (`src/components/integraciones/`):
+    * `CentroNotificaciones.tsx`: Dropdown interactivo en campana del Navbar con contador, estados no leídos y filtros.
+    * `ModalWebhook.tsx`: Modal para registrar endpoints con selección de eventos y clave secreta HMAC SHA-256.
+    * `PlantillaEditor.tsx`: Editor de plantillas para WhatsApp, Email y Web Push con variables dinámicas y vista previa interactiva.
+  * Tarjetas de citas actualizadas (`TarjetaCita.tsx`):
+    * Botón "Unirse a Videollamada" para teleconsultas virtuales (Google Meet / Zoom).
+    * Botón para exportar cita a archivo `.ics`.
+    * Botón para disparar recordatorio directo a WhatsApp.
+  * Página Hub de Integraciones (`src/pages/IntegracionesPage.tsx` en `/integraciones`):
+    * Gestión de Google Calendar, Google Meet y Zoom.
+    * Panel de WhatsApp Business API con plantillas predefinidas.
+    * Panel de Web Push API con disparador de prueba real en navegador.
+    * Listado de Webhooks con status HTTP reciente, copia de `secret_key` y disparador de ping de prueba.
+  * Mocks MSW (`src/mocks/handlers/integraciones.handlers.ts`):
+    * Handlers para endpoints de integraciones, webhooks, notificaciones y plantillas.
+  * Servicio API (`src/services/integraciones.service.ts`):
+    * Métodos desacoplados con tipado estricto para todas las operaciones de la fase.
+
+### 🔄 Fase 5 — Panel Admin y Personalización (Próxima a Desarrollar)
+* **Rama Planificada:** `feat/fase-5-admin`
 * **Objetivos:**
-  * Sincronización con Google Calendar (OAuth2 / exportación `.ics`).
-  * Generación de enlaces para teleconsultas / videollamadas (Google Meet / Zoom).
-  * Recordatorios por WhatsApp y Email transaccional.
-  * Notificaciones Web Push vía Service Worker.
-  * Historial de notificaciones y configuración de alertas.
+  * Dashboard de métricas y KPIs de negocio (ingresos, volumen de reservas, tasa de cancelación, ocupación de personal).
+  * Gráficos interactivos de rendimiento mensual y por categoría.
+  * Personalización visual sin código: selector de paleta primaria, modo oscuro/claro por defecto, subida de logotipo y tipografía.
+  * Formulario de reserva embebible / Widget popup para sitios externos.
+  * Gestión de permisos por rol (Administrador, Recepción, Profesional).
+  * Herramientas de cumplimiento GDPR / privacidad (exportación y borrado de datos de clientes).
 
 ---
 

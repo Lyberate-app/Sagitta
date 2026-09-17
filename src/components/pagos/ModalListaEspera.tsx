@@ -105,3 +105,4 @@ export function ModalListaEspera({
     </Modal>
   )
 }
+

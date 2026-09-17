@@ -33,7 +33,7 @@ export const AppContext = createContext<AppContextValue | undefined>(undefined)
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    return (localStorage.getItem('sagitta_theme') as Theme) ?? 'dark'
+    return (localStorage.getItem('sagitta_theme') as Theme) ?? 'light'
   })
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [toasts, setToasts] = useState<Toast[]>([])

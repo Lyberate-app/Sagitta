@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Clock,
@@ -21,7 +21,10 @@ import {
   Check,
   Star,
   Layers,
+  Sun,
+  Moon,
 } from 'lucide-react'
+import { AppContext } from '@/context/AppContext'
 import { useConfiguracion } from '@/hooks/useConfiguracion'
 import { TenantSelector } from '@/components/crm/TenantSelector'
 import { I18nSelector } from '@/components/crm/I18nSelector'
@@ -169,6 +172,7 @@ const EMPLEADOS_SEMILLA: Empleado[] = [
 export default function PortalReservaPage() {
   const { configuracion, nombreMarca, lemaMarca } = useConfiguracion()
   const { toast } = useToast()
+  const app = useContext(AppContext)
 
   const formatearMoneda = (monto: number) =>
     `${configuracion.simbolo_moneda || '$'}${monto.toFixed(2)}`
@@ -426,9 +430,9 @@ export default function PortalReservaPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F9FC] dark:bg-[#0A0C10] text-slate-900 dark:text-slate-100 font-sans selection:bg-black selection:text-white pb-28">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-[#0A0C10] text-slate-900 dark:text-slate-100 font-sans selection:bg-black selection:text-white pb-28">
       {/* ─── 1. NAVBAR ESTILO APPLE (FROSTED GLASS & MINIMALIST) ─────────── */}
-      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/75 dark:bg-[#0A0C10]/75 border-b border-black/[0.05] dark:border-white/[0.08] transition-all">
+      <header className="sticky top-0 z-40 backdrop-blur-2xl bg-white/80 dark:bg-[#0A0C10]/80 border-b border-black/[0.05] dark:border-white/[0.08] transition-all">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo y Marca */}
           <div className="flex items-center gap-3">
@@ -459,6 +463,21 @@ export default function PortalReservaPage() {
           <div className="flex items-center gap-2">
             <TenantSelector />
             <I18nSelector />
+
+            {/* Alternar fondo blanco / oscuro */}
+            <button
+              type="button"
+              onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 rounded-full text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Alternar fondo blanco y oscuro"
+              title={app?.theme === 'dark' ? 'Cambiar a fondo blanco' : 'Cambiar a fondo oscuro'}
+            >
+              {app?.theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-slate-600" />
+              )}
+            </button>
 
             {configuracion.telefono_soporte && (
               <a
@@ -996,6 +1015,21 @@ export default function PortalReservaPage() {
           </a>
 
           <div className="w-[1px] h-5 bg-black/[0.08] dark:bg-white/[0.12] mx-0.5" />
+
+          {/* Alternar fondo blanco / oscuro en dock */}
+          <button
+            type="button"
+            onClick={() => app?.setTheme(app.theme === 'dark' ? 'light' : 'dark')}
+            className="p-2 rounded-full text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors"
+            title={app?.theme === 'dark' ? 'Cambiar a fondo blanco' : 'Cambiar a fondo oscuro'}
+            aria-label="Alternar fondo blanco y oscuro"
+          >
+            {app?.theme === 'dark' ? (
+              <Sun className="w-4 h-4 text-amber-400" />
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
+          </button>
 
           {/* 🔐 CANDADO DISCRETO DE ACCESO ADMINISTRATIVO */}
           <Link

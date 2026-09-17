@@ -137,7 +137,8 @@ sagitta/
     │   ├── citas.service.ts        # CRUD de citas y consulta de disponibilidad
     │   ├── servicios.service.ts    # CRUD de servicios y categorías del negocio
     │   ├── empleados.service.ts    # Directorio de profesionales, horarios y disponibilidad
-    │   └── clientes.service.ts     # Directorio de clientes y búsqueda
+    │   ├── clientes.service.ts     # Directorio de clientes y búsqueda
+    │   └── pagos.service.ts        # Facturación, cupones, reembolsos, paquetes y lista de espera
     │
     ├── components/
     │   ├── ui/
@@ -167,13 +168,20 @@ sagitta/
     │   │   ├── SelectorFechaHora.tsx # Selector interactivo de slots y días
     │   │   └── index.ts
     │   │
-    │   └── reservas/
-    │       ├── PasoServicio.tsx      # Paso 1: Selección de servicio y duración
-    │       ├── PasoEmpleado.tsx      # Paso 2: Elección de profesional o asignación automática
-    │       ├── PasoFechaHora.tsx     # Paso 3: Selección de día y horario disponible
-    │       ├── PasoConfirmacion.tsx  # Paso 4: Resumen, citas recurrentes y notas
-    │       ├── CarritoReserva.tsx    # Modal de reservas múltiples en una sola transacción
-    │       ├── TarjetaCita.tsx       # Tarjeta individual con detalles y acciones de cita
+    │   ├── reservas/
+    │   │   ├── PasoServicio.tsx      # Paso 1: Selección de servicio y duración
+    │   │   ├── PasoEmpleado.tsx      # Paso 2: Elección de profesional o asignación automática
+    │   │   ├── PasoFechaHora.tsx     # Paso 3: Selección de día y horario disponible
+    │   │   ├── PasoConfirmacion.tsx  # Paso 4: Resumen, citas recurrentes, add-ons y cupones
+    │   │   ├── CarritoReserva.tsx    # Modal de reservas múltiples en una sola transacción
+    │   │   ├── TarjetaCita.tsx       # Tarjeta individual con detalles y acciones de cita
+    │   │   └── index.ts
+    │   │
+    │   └── pagos/
+    │       ├── FacturaModal.tsx      # Comprobante / factura detallada imprimible
+    │       ├── CuponInput.tsx        # Validación y aplicación en vivo de códigos promocionales
+    │       ├── ServiciosExtraSelector.tsx # Selector de tratamientos add-ons para citas
+    │       ├── ModalListaEspera.tsx  # Modal para ingresar a lista de espera
     │       └── index.ts
     │
     ├── pages/
@@ -184,6 +192,7 @@ sagitta/
     │   ├── ServiciosPage.tsx       # Catálogo de servicios, categorías y buffer times
     │   ├── EmpleadosPage.tsx       # Directorio de profesionales y visor de horarios laborales
     │   ├── ClientesPage.tsx        # Directorio de clientes con búsqueda y registro
+    │   ├── PagosPage.tsx           # Panel de finanzas: facturas, cupones, reembolsos y lista de espera
     │   └── NotFoundPage.tsx        # Página 404 con botón de regreso
     │
     └── mocks/
@@ -194,6 +203,7 @@ sagitta/
             ├── servicios.handlers.ts # Mock: CRUD /servicios y /categorias-servicio
             ├── empleados.handlers.ts # Mock: /empleados, horarios y slots
             ├── clientes.handlers.ts  # Mock: /clientes y búsqueda reactiva
+            ├── pagos.handlers.ts     # Mock: facturas, cupones, reembolsos, paquetes y lista de espera
             └── index.ts              # Agrupa todos los handlers (crece con cada fase)
 ```
 
@@ -347,29 +357,31 @@ VITE_USE_MOCKS=false
 
 ---
 
-### Fase 3 — Pagos y Finanzas 🔄 `PRÓXIMA`
+### Fase 3 — Pagos y Finanzas ✅ `COMPLETADA`
 **Rama:** `feat/fase-3-pagos`  
-**Descripción:** Monetización del sistema y funcionalidades avanzadas de reservas.
+**Descripción:** Monetización del sistema, facturación automática, cupones, reembolsos, add-ons, paquetes promocionales y lista de espera.
 
-**Lo que incluye:**
-- **Facturación automática:** PDF generado tras cada reserva
-- **Cupones de descuento:** fijos o porcentuales con fechas de vigencia
-- **Reembolsos:** gestión desde el panel admin
-- **Paquetes de servicios:** bundle con precio especial
-- **Servicios extra (add-ons):** opcionales que suman al precio
-- **Reservas grupales:** capacidad mínima y máxima
-- **Lista de espera:** inscripción automática + notificación de slot libre
-- **Límites de reservas:** máximo de citas por cliente
-- **Límites de tiempo:** tiempo mínimo para reservar o cancelar
+**Lo implementado:**
+- **Facturación automática:** Generación de comprobante fiscal con número correlativo, desglose de subtotal, descuentos y total, soporte para impresión directa (`window.print`) y visualización en modal (`FacturaModal.tsx`).
+- **Cupones de descuento:** Validación de códigos promocionales (`BIENVENIDA10`, `SAGITTA20`, `DESCUENTO15`) con cálculo de descuento porcentual y fijo en tiempo real (`CuponInput.tsx`), y panel administrativo para crear y retirar cupones.
+- **Gestión de reembolsos:** Registro y procesamiento de devoluciones para facturas pagadas con motivo de cancelación (`PagosPage.tsx`).
+- **Servicios Extra (Add-ons):** Selección de tratamientos adicionales que incrementan duración y costo (`ServiciosExtraSelector.tsx`), integrados en el asistente de reservas.
+- **Paquetes promocionales (Bundles):** Agrupación de servicios con descuento especial visible en el catálogo de finanzas.
+- **Lista de espera:** Registro de clientes en lista de espera (`ModalListaEspera.tsx`) con fecha deseada, hora preferente y botón de notificación ante cancelaciones.
+- **Panel integral de Finanzas (`/finanzas`):** KPIs clave (ingresos cobrados, facturas emitidas, total reembolsado y cupones activos), tabla completa de facturas y pestañas para cada módulo.
+- **Integración con Citas:** Botón directo en el detalle de citas para consultar factura o solicitar reembolso.
 
-**Endpoints que el compañero debe tener listos:**
-- `POST /api/pagos`, `GET /api/facturas/{id}/pdf`
-- `POST /api/cupones/validar`, `POST /api/reembolsos`
-- `GET /api/lista-espera`, `POST /api/lista-espera`
+**Endpoints que el compañero backend debe implementar:**
+- `GET /api/facturas`, `GET /api/facturas/{id}`, `POST /api/facturas`
+- `POST /api/cupones/validar`, `GET /api/cupones`, `POST /api/cupones`, `DELETE /api/cupones/{id}`
+- `GET /api/reembolsos`, `POST /api/reembolsos`
+- `GET /api/paquetes`, `POST /api/paquetes`
+- `GET /api/servicios-extra`
+- `GET /api/lista-espera`, `POST /api/lista-espera`, `DELETE /api/lista-espera/{id}`
 
 ---
 
-### Fase 4 — Integraciones y Notificaciones 🔗 `PLANIFICADA`
+### Fase 4 — Integraciones y Notificaciones 🔄 `PRÓXIMA`
 **Rama:** `feat/fase-4-integraciones`  
 **Descripción:** Conectar Sagitta con el ecosistema de herramientas del negocio.
 
